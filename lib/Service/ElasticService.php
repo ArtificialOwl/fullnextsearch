@@ -25,93 +25,46 @@
  *
  */
 
-namespace OCA\FullNextSearch\Provider\Files\NextSearch;
+namespace OCA\FullNextSearch\Service;
 
 use OCA\FullNextSearch\INextSearchIndex;
+use OCA\FullNextSearch\INextSearchProvider;
 
-class FilesIndex implements INextSearchIndex {
+class ElasticService {
 
-	/** @var string|int */
-	private $id;
-
-	/** @var string */
-	private $type;
-
-	/** @var string */
-	private $path;
-
-	/** @var string */
-	private $filename;
-
-	function __construct($id) {
-		$this->id = $id;
-	}
+	/** @var MiscService */
+	private $miscService;
 
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function getId() {
-		return $this->id;
-	}
-
-
-	/**
-	 * @param string $type
+	 * IndexService constructor.
 	 *
-	 * @return $this
+	 * @param MiscService $miscService
 	 */
-	public function setType($type) {
-		$this->type = $type;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
+	function __construct(MiscService $miscService) {
+		$this->miscService = $miscService;
 	}
 
 
 	/**
-	 * @param string $path
-	 *
-	 * @return $this
+	 * @param INextSearchProvider $provider
+	 * @param INextSearchIndex[] $items
 	 */
-	public function setPath($path) {
-		$this->path = $path;
+	public function indexItems(INextSearchProvider $provider, $items) {
+		foreach ($items as $item) {
+			echo ' < ' . $item->getId() . "\n";
 
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getPath() {
-		return $this->path;
+			$this->indexItem($provider, $item);
+		}
 	}
 
 
-	/**
-	 * @param $name
-	 *
-	 * @internal param string $path
-	 * @return $this
-	 */
-	public function setFilename($name) {
-		$this->filename = $name;
 
-		return $this;
+	public function indexItem(INextSearchProvider $provider, $item) {
+
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getFilename() {
-		return $this->filename;
-	}
+
 
 
 }

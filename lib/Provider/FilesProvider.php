@@ -83,7 +83,7 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index($chunkSize) {
+	public function generateIndex($chunkSize) {
 
 		if (sizeof($this->files) === 0) {
 			throw new NoResultException();

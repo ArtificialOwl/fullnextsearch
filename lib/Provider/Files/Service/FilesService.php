@@ -89,12 +89,16 @@ class FilesService {
 
 
 	/**
-	 * @param Node|Folder $file
+	 * @param Node $file
 	 *
 	 * @return FilesIndex
 	 */
 	private function generateFilesIndexFromFile(Node $file) {
-		$index = new FilesIndex($file->getInternalPath());
+
+		$index = new FilesIndex($file->getId());
+		$index->setType($file->getType())
+			  ->setPath($file->getInternalPath())
+			  ->setFilename($file->getName());
 
 		return $index;
 	}
@@ -106,11 +110,17 @@ class FilesService {
 	 */
 	public function indexFiles($files) {
 
+		$index = [];
 		foreach ($files as $file) {
-			echo $file->getId() . "\n";
+			if ($file->getType() === FileInfo::TYPE_FOLDER) {
+				continue;
+			}
+
+			echo $file->getId() . ' ' . $file->getPath() . "\n";
+			$index[] = $file;
 		}
 
-		return $files;
+		return $index;
 	}
 
 

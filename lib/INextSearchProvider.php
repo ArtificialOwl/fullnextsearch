@@ -67,13 +67,13 @@ interface INextSearchProvider {
 	public function unload();
 
 	/**
-	 * index everything related to index
+	 * generate data related to index
 	 *
 	 * @param int $chunkSize
 	 *
 	 * @return INextSearchIndex[]
 	 */
-	public function index($chunkSize);
+	public function generateIndex($chunkSize);
 
 
 	/**
