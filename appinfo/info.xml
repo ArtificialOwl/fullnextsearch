@@ -10,7 +10,7 @@
 
 ]]>
 	</description>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<licence>agpl</licence>
 	<author>Maxence Lange</author>
 	<namespace>FullNextSearch</namespace>
@@ -26,6 +26,11 @@
 	<dependencies>
 		<nextcloud min-version="12" max-version="13"/>
 	</dependencies>
+
+	<commands>
+		<command>OCA\FullNextSearch\Command\Index</command>
+	</commands>
+
 	<settings>
 		<admin>OCA\FullNextSearch\Settings\Admin</admin>
 		<admin-section>OCA\FullNextSearch\Settings\AdminSection</admin-section>

@@ -25,12 +25,44 @@
  *
  */
 
-namespace OCA\FullNextSearch\AppInfo;
+namespace OCA\FullNextSearch\Command;
 
-require_once __DIR__ . '/autoload.php';
+use OC\Core\Command\Base;
+use OCA\FullNextSearch\Service\MiscService;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-$app = new Application();
 
-$app->registerNavigation();
-$app->registerSettingsAdmin();
-$app->registerSettingsPersonal();
+class Index extends Base {
+
+	/** @var MiscService */
+	private $miscService;
+
+
+	/**
+	 * Index constructor.
+	 *
+	 * @param MiscService $miscService
+	 */
+	public function __construct(MiscService $miscService) {
+		parent::__construct();
+		$this->miscService = $miscService;
+	}
+
+
+	protected function configure() {
+		parent::configure();
+		$this->setName('fullnextsearch:index')
+			 ->setDescription('Index files');
+	}
+
+
+	protected function execute(InputInterface $input, OutputInterface $output) {
+		$output->writeln('index');
+	}
+
+
+}
+
+
+

@@ -27,10 +27,9 @@
 
 namespace OCA\FullNextSearch\AppInfo;
 
-require_once __DIR__ . '/autoload.php';
+$composerDir = __DIR__ . '/../vendor/';
 
-$app = new Application();
+if (is_dir($composerDir) && file_exists($composerDir . 'autoload.php')) {
+	require_once $composerDir . 'autoload.php';
+}
 
-$app->registerNavigation();
-$app->registerSettingsAdmin();
-$app->registerSettingsPersonal();
