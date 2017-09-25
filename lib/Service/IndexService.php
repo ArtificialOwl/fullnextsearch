@@ -74,7 +74,7 @@ class IndexService {
 			for ($i = 0; $i < 1000; $i++) {
 				try {
 					$items = $provider->generateIndex(self::INDEX_CHUNK_SIZE);
-					$this->elasticService->indexItems($items);
+					$this->elasticService->indexItems($provider, $items);
 				} catch (Exception $e) {
 					continue(2);
 				}
