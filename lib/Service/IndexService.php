@@ -27,7 +27,12 @@
 
 namespace OCA\FullNextSearch\Service;
 
+use \Exception;
+
 class IndexService {
+
+
+	const INDEX_CHUNK_SIZE = 3;
 
 	/** @var ProviderService */
 	private $providerService;
@@ -55,7 +60,20 @@ class IndexService {
 		$this->providerService->loadProviders();
 
 		foreach ($this->providerService->getProviders() AS $provider) {
-			$provider->index($userId, 0, 1000);
+
+			echo $provider->getId() . "\n";
+			$provider->initUser($userId);
+			$index = 0;
+			for ($i = 0; $i < 1000; $i++) {
+				try {
+					$items = $provider->index(self::INDEX_CHUNK_SIZE);
+					$index += count($items);
+				} catch (Exception $e) {
+					continue(2);
+				}
+			}
+
+			$provider->endUser($userId);
 		}
 
 	}

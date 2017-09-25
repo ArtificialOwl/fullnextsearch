@@ -40,28 +40,40 @@ interface INextSearchProvider {
 	public function getId();
 
 	/**
-	 * Init the search provider
+	 * Load the search provider
 	 */
-	public function init();
+	public function load();
 
 
 	/**
-	 * Close the search provider
+	 * Called on switch to new user
+	 *
+	 * @param $userId
+	 *
+	 * @return
 	 */
-	public function end();
+	public function initUser($userId);
 
+
+	/**
+	 * Called when user is not needed anymore.
+	 */
+	public function endUser();
+
+
+	/**
+	 * Called at the end of the use of the provider
+	 */
+	public function unload();
 
 	/**
 	 * index everything related to index
 	 *
-	 * @param string $userId
-	 * @param int $start
-	 * @param int $size
+	 * @param int $chunkSize
 	 *
 	 * @return INextSearchIndex[]
-	 * @throws NoResultException when no result are available.
 	 */
-	public function index($userId, $start, $size);
+	public function index($chunkSize);
 
 
 	/**

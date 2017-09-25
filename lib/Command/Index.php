@@ -68,6 +68,8 @@ class Index extends Base {
 		$output->writeln('index');
 
 		$this->indexService->indexContentFromUser('cult');
+		$this->indexService->indexContentFromUser('test1');
+		$this->indexService->indexContentFromUser('test2');
 	}
 
 

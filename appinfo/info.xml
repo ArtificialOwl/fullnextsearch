@@ -29,7 +29,6 @@
 
 	<commands>
 		<command>OCA\FullNextSearch\Command\Index</command>
-		<command>OCA\FullNextSearch\Command\Index</command>
 	</commands>
 
 	<settings>

@@ -28,6 +28,7 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
+use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
 use OCA\FullNextSearch\Service\MiscService;
 
 class FilesService {
@@ -46,7 +47,32 @@ class FilesService {
 	}
 
 
-	public function index($userId) {
-		echo 'index ' . $userId;
+	/**
+	 * @param $userId
+	 *
+	 * @return FilesIndex[]
+	 */
+	public function getFiles($userId) {
+		$files = \OC::$server->getUserFolder($userId)
+							 ->getDirectoryListing();
+
+		$result = [];
+		foreach ($files as $file) {
+			$result[] = new FilesIndex($file->getName());
+		}
+
+		return $result;
 	}
+
+
+	/**
+	 * @param FilesIndex[] $files
+	 *
+	 * @return FilesIndex[]
+	 */
+	public function indexFiles($files) {
+		return $files;
+	}
+
+
 }

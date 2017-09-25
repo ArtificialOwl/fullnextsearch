@@ -103,7 +103,7 @@ class ProviderService {
 
 		$this->providerIdMustBeUnique($provider);
 
-		$provider->init();
+		$provider->load();
 		$this->providers[] = $provider;
 	}
 

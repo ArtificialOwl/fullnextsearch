@@ -28,6 +28,7 @@
 namespace OCA\FullNextSearch\Provider;
 
 use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\Exceptions\NoResultException;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesResult;
@@ -43,6 +44,8 @@ class FilesProvider implements INextSearchProvider {
 	/** @var MiscService */
 	private $miscService;
 
+	/** @var FilesIndex[] */
+	private $files = [];
 
 	/**
 	 * {@inheritdoc}
@@ -55,12 +58,19 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function init() {
+	public function load() {
 		$app = new Application();
 
 		$container = $app->getContainer();
 		$this->filesService = $container->query(FilesService::class);
 		$this->miscService = $container->query(MiscService::class);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function initUser($userId) {
+		$this->files = $this->filesService->getFiles($userId);
 	}
 
 
@@ -73,18 +83,37 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index($userId, $start, $size) {
-		$this->filesService->index($userId);
+	public function index($chunkSize) {
 
-		return [new FilesIndex()];
+		if (sizeof($this->files) === 0) {
+			throw new NoResultException();
+		}
+
+		$toIndex = array_splice($this->files, 0, $chunkSize);
+		$result = $this->filesService->indexFiles($toIndex);
+
+		return $result;
 	}
 
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function search($userId, $needle, $start, $size)
-	{
+	public function search($userId, $needle, $start, $size) {
 		return [new FilesResult()];
+	}
+
+
+	/**
+	 * Called when user is not needed anymore.
+	 */
+	public function endUser() {
+		$this->files = [];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function unload() {
 	}
 }

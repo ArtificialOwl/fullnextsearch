@@ -27,20 +27,29 @@
 
 namespace OCA\FullNextSearch\Provider\Files\NextSearch;
 
-use OCA\FullNextSearch\AppInfo\Application;
+use JsonSerializable;
 use OCA\FullNextSearch\INextSearchIndex;
-use OCA\FullNextSearch\INextSearchProvider;
-use OCA\FullNextSearch\Provider\Files\Service\FilesService;
-use OCA\FullNextSearch\Service\MiscService;
 
-class FilesIndex implements INextSearchIndex {
+class FilesIndex implements INextSearchIndex, JsonSerializable {
 
+	/** @var string */
+	private $name;
+
+	function __construct($name = '') {
+		$this->name = $name;
+	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getId() {
-		return '1';
+		return $this->name;
 	}
 
+
+	function jsonSerialize() {
+		return [
+			'id' => $this->getId()
+		];
+	}
 }
