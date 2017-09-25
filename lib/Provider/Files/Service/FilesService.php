@@ -76,13 +76,12 @@ class FilesService {
 
 		$result = [];
 		foreach ($files as $file) {
-			/** @var $file Folder */
 
 			$result[] = $this->generateFilesIndexFromFile($file);
 			if ($file->getType() === FileInfo::TYPE_FOLDER) {
+				/** @var $file Folder */
 				$result = array_merge($result, $this->getFilesFromDirectory($file));
 			}
-
 		}
 
 		return $result;
@@ -90,11 +89,11 @@ class FilesService {
 
 
 	/**
-	 * @param Folder $file
+	 * @param Node|Folder $file
 	 *
 	 * @return FilesIndex
 	 */
-	private function generateFilesIndexFromFile(Folder $file) {
+	private function generateFilesIndexFromFile(Node $file) {
 		$index = new FilesIndex($file->getInternalPath());
 
 		return $index;
