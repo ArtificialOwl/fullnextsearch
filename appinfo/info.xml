@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>fullnextsearch</id>
+	<name>Full Next Search</name>
+	<summary>Summary of Full Next Search</summary>
+	<description><![CDATA[
+
+	Description of Full Next Search
+
+]]>
+	</description>
+	<version>0.0.1</version>
+	<licence>agpl</licence>
+	<author>Maxence Lange</author>
+	<namespace>FullNextSearch</namespace>
+	<documentation>
+		<admin>https://github.com/daita/fullnextsearch/wiki</admin>
+	</documentation>
+	<category>tools</category>
+	<website>https://github.com/daita/fullnextsearch</website>
+	<bugs>https://github.com/daita/fullnextsearch/issues</bugs>
+	<repository>https://github.com/daita/fullnextsearch.git</repository>
+	<!--<screenshot>-->
+	<!--</screenshot>-->
+	<dependencies>
+		<nextcloud min-version="12" max-version="13"/>
+	</dependencies>
+	<settings>
+		<admin>OCA\FullNextSearch\Settings\Admin</admin>
+		<admin-section>OCA\FullNextSearch\Settings\AdminSection</admin-section>
+		<personal>OCA\FullNextSearch\Settings\Personal</personal>
+		<personal-section>OCA\FullNextSearch\Settings\PersonalSection</personal-section>
+	</settings>
+</info>
