@@ -25,62 +25,37 @@
  *
  */
 
-namespace OCA\FullNextSearch\Command;
+namespace OCA\FullNextSearch\Provider;
 
-use OC\Core\Command\Base;
+use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Service\ProviderService;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-
-class Index extends Base {
-
-	/** @var ProviderService */
-	private $providerService;
+class FilesProvider implements INextSearchProvider {
 
 	/** @var MiscService */
 	private $miscService;
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init() {
+		$app = new Application();
+
+		$container = $app->getContainer();
+		$this->miscService = $container->query(MiscService::class);
+	}
 
 	/**
-	 * Index constructor.
-	 *
-	 * @param ProviderService $providerService
-	 * @param MiscService $miscService
+	 * {@inheritdoc}
 	 */
-	public function __construct(ProviderService $providerService, MiscService $miscService) {
-		parent::__construct();
-		$this->providerService = $providerService;
-		$this->miscService = $miscService;
+	public function end() {
 	}
 
-
-	protected function configure() {
-		parent::configure();
-		$this->setName('fullnextsearch:index')
-			 ->setDescription('Index files');
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index($userId) {
+		echo 'INDEX ' . $userId;
 	}
-
-
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('index');
-
-		$this->providerService->loadAllLocalProviders();
-		$this->providerService->indexContentFromUser('cult');
-	}
-
-
-	private function indexFilesFromUser($userId)
-	{
-
-		$this->indexService->index($userId, 'welcome.txt');
-
-
-	}
-
-
 }
-
-
-

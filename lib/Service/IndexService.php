@@ -25,62 +25,27 @@
  *
  */
 
-namespace OCA\FullNextSearch\Command;
+namespace OCA\FullNextSearch\Service;
 
-use OC\Core\Command\Base;
-use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Service\ProviderService;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
-
-class Index extends Base {
-
-	/** @var ProviderService */
-	private $providerService;
+class IndexService {
 
 	/** @var MiscService */
 	private $miscService;
 
-
 	/**
-	 * Index constructor.
+	 * IndexService constructor.
 	 *
-	 * @param ProviderService $providerService
 	 * @param MiscService $miscService
 	 */
-	public function __construct(ProviderService $providerService, MiscService $miscService) {
-		parent::__construct();
-		$this->providerService = $providerService;
+	function __construct(MiscService $miscService) {
 		$this->miscService = $miscService;
 	}
 
 
-	protected function configure() {
-		parent::configure();
-		$this->setName('fullnextsearch:index')
-			 ->setDescription('Index files');
-	}
 
-
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('index');
-
-		$this->providerService->loadAllLocalProviders();
-		$this->providerService->indexContentFromUser('cult');
-	}
-
-
-	private function indexFilesFromUser($userId)
+	function index($userId, $file)
 	{
 
-		$this->indexService->index($userId, 'welcome.txt');
-
-
 	}
 
-
 }
-
-
-

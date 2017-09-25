@@ -25,62 +25,67 @@
  *
  */
 
-namespace OCA\FullNextSearch\Command;
+namespace OCA\FullNextSearch\Service;
 
-use OC\Core\Command\Base;
-use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Service\ProviderService;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotCompatibleException;
+use OCA\FullNextSearch\INextSearchProvider;
 
+class ProviderService {
 
-class Index extends Base {
-
-	/** @var ProviderService */
-	private $providerService;
+	const FILES = 'OCA\FullNextSearch\Provider\FilesProvider';
 
 	/** @var MiscService */
 	private $miscService;
 
+	/**
+	 * @var INextSearchProvider[]
+	 */
+	private $providers = [];
 
 	/**
-	 * Index constructor.
+	 * ProviderService constructor.
 	 *
-	 * @param ProviderService $providerService
 	 * @param MiscService $miscService
 	 */
-	public function __construct(ProviderService $providerService, MiscService $miscService) {
-		parent::__construct();
-		$this->providerService = $providerService;
+	function __construct(MiscService $miscService) {
 		$this->miscService = $miscService;
 	}
 
 
-	protected function configure() {
-		parent::configure();
-		$this->setName('fullnextsearch:index')
-			 ->setDescription('Index files');
+	/**
+	 *
+	 */
+	public function loadAllLocalProviders() {
+		$this->loadProvider(self::FILES);
 	}
 
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('index');
+	/**
+	 * @param string $name
+	 *
+	 * @throws NextSearchProviderIsNotCompatibleException
+	 */
+	public function loadProvider($name) {
 
-		$this->providerService->loadAllLocalProviders();
-		$this->providerService->indexContentFromUser('cult');
+		$provider = \OC::$server->query((string)$name);
+		if (!($provider instanceof INextSearchProvider)) {
+			throw new NextSearchProviderIsNotCompatibleException(
+				$name . ' is not a compatible NextSearchProvider'
+			);
+		}
+
+		$this->providers[] = $provider;
 	}
 
 
-	private function indexFilesFromUser($userId)
-	{
-
-		$this->indexService->index($userId, 'welcome.txt');
-
+	/**
+	 * @param $userId
+	 */
+	public function indexContentFromUser($userId) {
+		foreach($this->providers AS $provider)
+		{
+			$provider->index($userId);
+		}
 
 	}
-
-
 }
-
-
-
