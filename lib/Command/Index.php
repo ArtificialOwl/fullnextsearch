@@ -66,7 +66,6 @@ class Index extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('index');
 
-		$this->providerService->loadAllLocalProviders();
 		$this->providerService->indexContentFromUser('cult');
 	}
 

@@ -27,12 +27,16 @@
 
 namespace OCA\FullNextSearch\Service;
 
+use OC\App\AppManager;
+use OC_App;
+use OCA\FullNextSearch\Exceptions\NextSearchProviderInfoException;
 use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotCompatibleException;
 use OCA\FullNextSearch\INextSearchProvider;
 
 class ProviderService {
 
-	const FILES = 'OCA\FullNextSearch\Provider\FilesProvider';
+	/** @var AppManager */
+	private $appManager;
 
 	/** @var MiscService */
 	private $miscService;
@@ -45,32 +49,39 @@ class ProviderService {
 	/**
 	 * ProviderService constructor.
 	 *
+	 * @param AppManager $appManager
 	 * @param MiscService $miscService
 	 */
-	function __construct(MiscService $miscService) {
+	function __construct(AppManager $appManager, MiscService $miscService) {
+		$this->appManager = $appManager;
 		$this->miscService = $miscService;
+
+		$this->loadProviders();
 	}
 
 
 	/**
-	 *
+	 * Load all NextSearchProviders set in any info.xml file
 	 */
-	public function loadAllLocalProviders() {
-		$this->loadProvider(self::FILES);
+	public function loadProviders() {
+		$apps = $this->appManager->getInstalledApps();
+		foreach ($apps as $appId) {
+			$this->loadProviderFromApp($appId);
+		}
 	}
 
 
 	/**
-	 * @param string $name
+	 * @param string $providerId
 	 *
 	 * @throws NextSearchProviderIsNotCompatibleException
 	 */
-	public function loadProvider($name) {
+	public function loadProvider($providerId) {
 
-		$provider = \OC::$server->query((string)$name);
+		$provider = \OC::$server->query((string)$providerId);
 		if (!($provider instanceof INextSearchProvider)) {
 			throw new NextSearchProviderIsNotCompatibleException(
-				$name . ' is not a compatible NextSearchProvider'
+				$providerId . ' is not a compatible NextSearchProvider'
 			);
 		}
 
@@ -82,10 +93,44 @@ class ProviderService {
 	 * @param $userId
 	 */
 	public function indexContentFromUser($userId) {
-		foreach($this->providers AS $provider)
-		{
+		foreach ($this->providers AS $provider) {
 			$provider->index($userId);
 		}
 
 	}
+
+
+	/**
+	 * @param $appId
+	 *
+	 * @throws NextSearchProviderInfoException
+	 */
+	private function loadProviderFromApp($appId) {
+		$appInfo = OC_App::getAppInfo($appId);
+		if (!key_exists('fullnextsearch', $appInfo)) {
+			return;
+		}
+
+		if (!key_exists('provider', $appInfo['fullnextsearch'])) {
+			throw new NextSearchProviderInfoException('wrong syntax in ' . $appId . ' info.xml');
+		}
+
+		$providers = $appInfo['fullnextsearch']['provider'];
+		$this->loadProvidersFromList($providers);
+	}
+
+
+	/**
+	 * @param string|array $providers
+	 */
+	private function loadProvidersFromList($providers) {
+		if (!is_array($providers)) {
+			$providers = [$providers];
+		}
+
+		foreach ($providers AS $provider) {
+			$this->loadProvider($provider);
+		}
+	}
+
 }

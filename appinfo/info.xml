@@ -37,4 +37,9 @@
 		<personal>OCA\FullNextSearch\Settings\Personal</personal>
 		<personal-section>OCA\FullNextSearch\Settings\PersonalSection</personal-section>
 	</settings>
+
+	<fullnextsearch>
+		<provider>OCA\FullNextSearch\Provider\FilesProvider</provider>
+	</fullnextsearch>
+
 </info>
