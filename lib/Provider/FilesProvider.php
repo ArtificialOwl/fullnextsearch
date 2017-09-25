@@ -29,12 +29,27 @@ namespace OCA\FullNextSearch\Provider;
 
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
+use OCA\FullNextSearch\Provider\Files\Service\FilesService;
 use OCA\FullNextSearch\Service\MiscService;
 
 class FilesProvider implements INextSearchProvider {
 
+
+	/** @var FilesService */
+	private $filesService;
+
 	/** @var MiscService */
 	private $miscService;
+
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getId() {
+		return 'files';
+	}
+
 
 	/**
 	 * {@inheritdoc}
@@ -43,8 +58,10 @@ class FilesProvider implements INextSearchProvider {
 		$app = new Application();
 
 		$container = $app->getContainer();
+		$this->filesService = $container->query(FilesService::class);
 		$this->miscService = $container->query(MiscService::class);
 	}
+
 
 	/**
 	 * {@inheritdoc}
@@ -55,7 +72,18 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index($userId) {
-		echo 'INDEX ' . $userId;
+	public function index($userId, $start, $size) {
+		$this->filesService->index($userId);
+
+		return [new FilesIndex()];
+	}
+
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function search($userId, $needle, $start, $size)
+	{
+		return [new FilesResult()];
 	}
 }

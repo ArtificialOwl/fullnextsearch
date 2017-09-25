@@ -25,56 +25,28 @@
  *
  */
 
-namespace OCA\FullNextSearch;
-
-use OCA\FullNextSearch\Exceptions\NoResultException;
-
-interface INextSearchProvider {
+namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string
-	 */
-	public function getId();
+use OCA\FullNextSearch\Service\MiscService;
 
-	/**
-	 * Init the search provider
-	 */
-	public function init();
+class FilesService {
+
+	/** @var MiscService */
+	private $miscService;
 
 
 	/**
-	 * Close the search provider
+	 * ProviderService constructor.
+	 *
+	 * @param MiscService $miscService
 	 */
-	public function end();
+	function __construct(MiscService $miscService) {
+		$this->miscService = $miscService;
+	}
 
 
-	/**
-	 * index everything related to index
-	 *
-	 * @param string $userId
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchIndex[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function index($userId, $start, $size);
-
-
-	/**
-	 * searching string regarding userId
-	 *
-	 * @param string $userId
-	 * @param string $needle
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchResult[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function search($userId, $needle, $start, $size);
-
+	public function index($userId) {
+		echo 'index ' . $userId;
+	}
 }

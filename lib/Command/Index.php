@@ -27,6 +27,7 @@
 
 namespace OCA\FullNextSearch\Command;
 
+use Exception;
 use OC\Core\Command\Base;
 use OCA\FullNextSearch\Service\MiscService;
 use OCA\FullNextSearch\Service\ProviderService;
@@ -66,16 +67,8 @@ class Index extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('index');
 
+		$this->providerService->loadProviders();
 		$this->providerService->indexContentFromUser('cult');
-	}
-
-
-	private function indexFilesFromUser($userId)
-	{
-
-		$this->indexService->index($userId, 'welcome.txt');
-
-
 	}
 
 

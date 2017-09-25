@@ -25,56 +25,9 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Exceptions;
 
-use OCA\FullNextSearch\Exceptions\NoResultException;
-
-interface INextSearchProvider {
-
-
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string
-	 */
-	public function getId();
-
-	/**
-	 * Init the search provider
-	 */
-	public function init();
-
-
-	/**
-	 * Close the search provider
-	 */
-	public function end();
-
-
-	/**
-	 * index everything related to index
-	 *
-	 * @param string $userId
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchIndex[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function index($userId, $start, $size);
-
-
-	/**
-	 * searching string regarding userId
-	 *
-	 * @param string $userId
-	 * @param string $needle
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchResult[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function search($userId, $needle, $start, $size);
+class NextSearchProviderIsNotUniqueException extends \Exception {
 
 }
+

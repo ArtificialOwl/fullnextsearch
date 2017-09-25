@@ -25,56 +25,22 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Provider\Files\NextSearch;
 
-use OCA\FullNextSearch\Exceptions\NoResultException;
+use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\INextSearchIndex;
+use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\Provider\Files\Service\FilesService;
+use OCA\FullNextSearch\Service\MiscService;
 
-interface INextSearchProvider {
-
-
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string
-	 */
-	public function getId();
-
-	/**
-	 * Init the search provider
-	 */
-	public function init();
+class FilesIndex implements INextSearchIndex {
 
 
 	/**
-	 * Close the search provider
+	 * {@inheritdoc}
 	 */
-	public function end();
-
-
-	/**
-	 * index everything related to index
-	 *
-	 * @param string $userId
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchIndex[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function index($userId, $start, $size);
-
-
-	/**
-	 * searching string regarding userId
-	 *
-	 * @param string $userId
-	 * @param string $needle
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchResult[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function search($userId, $needle, $start, $size);
+	public function getId() {
+		return '1';
+	}
 
 }
