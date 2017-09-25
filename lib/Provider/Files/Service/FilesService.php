@@ -30,6 +30,9 @@ namespace OCA\FullNextSearch\Provider\Files\Service;
 
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
 use OCA\FullNextSearch\Service\MiscService;
+use OCP\Files\FileInfo;
+use OCP\Files\Folder;
+use OCP\Files\Node;
 
 class FilesService {
 
@@ -53,12 +56,33 @@ class FilesService {
 	 * @return FilesIndex[]
 	 */
 	public function getFiles($userId) {
-		$files = \OC::$server->getUserFolder($userId)
-							 ->getDirectoryListing();
+		/** @var Folder $root */
+		$root = \OC::$server->getUserFolder($userId)
+							->get('/');
+
+		$result = $this->getFilesFromDirectory($root);
+
+		return $result;
+	}
+
+
+	/**
+	 * @param Folder $node
+	 *
+	 * @return FilesIndex[]
+	 */
+	public function getFilesFromDirectory(Folder $node) {
+		$files = $node->getDirectoryListing();
 
 		$result = [];
 		foreach ($files as $file) {
-			$result[] = new FilesIndex($file->getName());
+			/** @var $file Folder */
+
+			$result[] = $this->generateFilesIndexFromFile($file);
+			if ($file->getType() === FileInfo::TYPE_FOLDER) {
+				$result = array_merge($result, $this->getFilesFromDirectory($file));
+			}
+
 		}
 
 		return $result;
@@ -66,11 +90,27 @@ class FilesService {
 
 
 	/**
+	 * @param Folder $file
+	 *
+	 * @return FilesIndex
+	 */
+	private function generateFilesIndexFromFile(Folder $file) {
+		$index = new FilesIndex($file->getInternalPath());
+
+		return $index;
+	}
+
+	/**
 	 * @param FilesIndex[] $files
 	 *
 	 * @return FilesIndex[]
 	 */
 	public function indexFiles($files) {
+
+		foreach ($files as $file) {
+			echo $file->getId() . "\n";
+		}
+
 		return $files;
 	}
 

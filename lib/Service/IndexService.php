@@ -59,9 +59,10 @@ class IndexService {
 	public function indexContentFromUser($userId) {
 		$this->providerService->loadProviders();
 
+		echo '. userId: ' . $userId . "\n";
 		foreach ($this->providerService->getProviders() AS $provider) {
 
-			echo $provider->getId() . "\n";
+			echo '  . provider:' . $provider->getId() . "\n";
 			$provider->initUser($userId);
 			$index = 0;
 			for ($i = 0; $i < 1000; $i++) {
@@ -73,7 +74,7 @@ class IndexService {
 				}
 			}
 
-			$provider->endUser($userId);
+			$provider->endUser();
 		}
 
 	}
