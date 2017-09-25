@@ -27,18 +27,17 @@
 
 namespace OCA\FullNextSearch\Command;
 
-use Exception;
 use OC\Core\Command\Base;
+use OCA\FullNextSearch\Service\IndexService;
 use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Service\ProviderService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
 class Index extends Base {
 
-	/** @var ProviderService */
-	private $providerService;
+	/** @var IndexService */
+	private $indexService;
 
 	/** @var MiscService */
 	private $miscService;
@@ -47,12 +46,13 @@ class Index extends Base {
 	/**
 	 * Index constructor.
 	 *
-	 * @param ProviderService $providerService
+	 * @param IndexService $indexService
 	 * @param MiscService $miscService
 	 */
-	public function __construct(ProviderService $providerService, MiscService $miscService) {
+	public function __construct(IndexService $indexService, MiscService $miscService) {
 		parent::__construct();
-		$this->providerService = $providerService;
+		$this->indexService = $indexService;
+
 		$this->miscService = $miscService;
 	}
 
@@ -67,8 +67,7 @@ class Index extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('index');
 
-		$this->providerService->loadProviders();
-		$this->providerService->indexContentFromUser('cult');
+		$this->indexService->indexContentFromUser('cult');
 	}
 
 

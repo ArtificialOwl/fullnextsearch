@@ -30,6 +30,7 @@ namespace OCA\FullNextSearch\Provider;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
+use OCA\FullNextSearch\Provider\Files\NextSearch\FilesResult;
 use OCA\FullNextSearch\Provider\Files\Service\FilesService;
 use OCA\FullNextSearch\Service\MiscService;
 

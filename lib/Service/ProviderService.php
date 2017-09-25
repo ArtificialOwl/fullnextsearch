@@ -46,6 +46,10 @@ class ProviderService {
 	/** @var INextSearchProvider[] */
 	private $providers = [];
 
+	/** @var bool */
+	private $providersLoaded = false;
+
+
 	/**
 	 * ProviderService constructor.
 	 *
@@ -66,6 +70,10 @@ class ProviderService {
 	 * @throws Exception
 	 */
 	public function loadProviders() {
+		if ($this->providersLoaded) {
+			return;
+		}
+
 		try {
 			$apps = $this->appManager->getInstalledApps();
 			foreach ($apps as $appId) {
@@ -73,8 +81,9 @@ class ProviderService {
 			}
 		} catch (Exception $e) {
 			$this->miscService->log($e->getMessage());
-			throw $e;
 		}
+
+		$this->providersLoaded = true;
 	}
 
 
@@ -100,15 +109,11 @@ class ProviderService {
 
 
 	/**
-	 * @param $userId
+	 * @return INextSearchProvider[]
 	 */
-	public function indexContentFromUser($userId) {
-		foreach ($this->providers AS $provider) {
-			$provider->index($userId, 0, 1000);
-		}
-
+	public function getProviders() {
+		return $this->providers;
 	}
-
 
 	/**
 	 * @param string $appId

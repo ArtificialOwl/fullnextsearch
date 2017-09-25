@@ -29,23 +29,36 @@ namespace OCA\FullNextSearch\Service;
 
 class IndexService {
 
+	/** @var ProviderService */
+	private $providerService;
+
 	/** @var MiscService */
 	private $miscService;
+
 
 	/**
 	 * IndexService constructor.
 	 *
+	 * @param ProviderService $providerService
 	 * @param MiscService $miscService
 	 */
-	function __construct(MiscService $miscService) {
+	function __construct(ProviderService $providerService, MiscService $miscService) {
+		$this->providerService = $providerService;
 		$this->miscService = $miscService;
 	}
 
 
+	/**
+	 * @param $userId
+	 */
+	public function indexContentFromUser($userId) {
+		$this->providerService->loadProviders();
 
-	function index($userId, $file)
-	{
+		foreach ($this->providerService->getProviders() AS $provider) {
+			$provider->index($userId, 0, 1000);
+		}
 
 	}
+
 
 }
