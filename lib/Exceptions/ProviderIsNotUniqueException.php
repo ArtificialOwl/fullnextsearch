@@ -27,7 +27,7 @@
 
 namespace OCA\FullNextSearch\Exceptions;
 
-class NextSearchProviderIsNotUniqueException extends \Exception {
+class ProviderIsNotUniqueException extends \Exception {
 
 }
 

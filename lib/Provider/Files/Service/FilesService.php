@@ -116,7 +116,7 @@ class FilesService {
 				continue;
 			}
 
-			echo $file->getId() . ' ' . $file->getPath() . "\n";
+//			echo $file->getId() . ' ' . $file->getPath() . "\n";
 			$index[] = $file;
 		}
 

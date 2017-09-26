@@ -66,8 +66,8 @@ class NavigationController extends Controller {
 	 */
 	public function navigate() {
 		$data = [
-			ConfigService::APP_TEST => $this->configService->getAppValue(
-				ConfigService::APP_TEST
+			ConfigService::SEARCH_PLATFORM   => $this->configService->getAppValue(
+				ConfigService::SEARCH_PLATFORM
 			),
 			ConfigService::APP_TEST_PERSONAL => $this->configService->getUserValue(
 				ConfigService::APP_TEST_PERSONAL

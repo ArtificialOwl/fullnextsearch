@@ -51,7 +51,9 @@ class IndexService {
 	 * @param PlatformService $platformService
 	 * @param MiscService $miscService
 	 */
-	function __construct(ProviderService $providerService, PlatformService $platformService, MiscService $miscService) {
+	function __construct(
+		ProviderService $providerService, PlatformService $platformService, MiscService $miscService
+	) {
 		$this->providerService = $providerService;
 		$this->platformService = $platformService;
 		$this->miscService = $miscService;
@@ -62,17 +64,18 @@ class IndexService {
 	 * @param $userId
 	 */
 	public function indexContentFromUser($userId) {
-		$this->providerService->loadProviders();
+		$providers = $this->providerService->getProviders();
+		$platform = $this->platformService->getPlatform();
 
 		echo '. userId: ' . $userId . "\n";
-		foreach ($this->providerService->getProviders() AS $provider) {
+		foreach ($providers AS $provider) {
 
 			echo '  . provider:' . $provider->getId() . "\n";
 			$provider->initUser($userId);
 			for ($i = 0; $i < 1000; $i++) {
 				try {
 					$items = $provider->generateIndex(self::INDEX_CHUNK_SIZE);
-					$this->platformService->getPlatform()->indexDocuments($provider, $items);
+					$platform->indexDocuments($provider, $items);
 				} catch (Exception $e) {
 					continue(2);
 				}

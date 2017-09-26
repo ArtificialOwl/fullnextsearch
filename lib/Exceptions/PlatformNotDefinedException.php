@@ -25,45 +25,9 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Exceptions;
 
-interface INextSearchPlatform {
-
-	public function load();
-
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string
-	 */
-	public function getId();
-
-	/**
-	 * Load the search provider
-	 */
-	public function create();
-
-
-	public function upgrade();
-
-
-	/**
-	 * @param INextSearchProvider $provider
-	 * @param INextSearchDocument[] $documents
-	 *
-	 * @return mixed
-	 */
-	public function indexDocuments(INextSearchProvider $provider, $documents);
-
-
-	/**
-	 * @param INextSearchProvider $provider
-	 * @param INextSearchDocument $document
-	 *
-	 * @return mixed
-	 */
-	public function indexDocument(INextSearchProvider $provider, INextSearchDocument $document);
-
-	public function search($string);
+class PlatformNotDefinedException extends \Exception {
 
 }
+

@@ -27,7 +27,7 @@
 
 namespace OCA\FullNextSearch\Exceptions;
 
-class NextSearchProviderIsNotCompatibleException extends \Exception {
+class ProviderIsNotCompatibleException extends \Exception {
 
 }
 

@@ -93,8 +93,8 @@ class SettingsController extends Controller {
 	 */
 	public function getSettingsAdmin() {
 		$data = [
-			ConfigService::APP_TEST => $this->configService->getAppValue(
-				ConfigService::APP_TEST
+			ConfigService::SEARCH_PLATFORM => $this->configService->getAppValue(
+				ConfigService::SEARCH_PLATFORM
 			)
 		];
 
@@ -108,7 +108,7 @@ class SettingsController extends Controller {
 	 */
 	public function setSettingsAdmin($data) {
 		$this->configService->setAppValue(
-			ConfigService::APP_TEST, $data[ConfigService::APP_TEST]
+			ConfigService::SEARCH_PLATFORM, $data[ConfigService::SEARCH_PLATFORM]
 		);
 
 		return $this->getSettingsAdmin();

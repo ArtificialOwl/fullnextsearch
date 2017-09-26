@@ -27,7 +27,7 @@
 
 namespace OCA\FullNextSearch\Exceptions;
 
-class NextSearchPlatformNotDefinedException extends \Exception {
+class PlatformIsNotCompatibleException extends \Exception {
 
 }
 

@@ -30,9 +30,8 @@ namespace OCA\FullNextSearch\Service;
 use Exception;
 use OC\App\AppManager;
 use OC_App;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderInfoException;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotCompatibleException;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotUniqueException;
+use OCA\FullNextSearch\Exceptions\ProviderIsNotCompatibleException;
+use OCA\FullNextSearch\Exceptions\ProviderIsNotUniqueException;
 use OCA\FullNextSearch\INextSearchProvider;
 
 class ProviderService {
@@ -69,7 +68,7 @@ class ProviderService {
 	 *
 	 * @throws Exception
 	 */
-	public function loadProviders() {
+	private function loadProviders() {
 		if ($this->providersLoaded) {
 			return;
 		}
@@ -77,7 +76,7 @@ class ProviderService {
 		try {
 			$apps = $this->appManager->getInstalledApps();
 			foreach ($apps as $appId) {
-				$this->loadProviderFromApp($appId);
+				$this->loadProvidersFromApp($appId);
 			}
 		} catch (Exception $e) {
 			$this->miscService->log($e->getMessage());
@@ -90,13 +89,13 @@ class ProviderService {
 	/**
 	 * @param string $providerId
 	 *
-	 * @throws NextSearchProviderIsNotCompatibleException
+	 * @throws ProviderIsNotCompatibleException
 	 */
 	public function loadProvider($providerId) {
 
 		$provider = \OC::$server->query((string)$providerId);
 		if (!($provider instanceof INextSearchProvider)) {
-			throw new NextSearchProviderIsNotCompatibleException(
+			throw new ProviderIsNotCompatibleException(
 				$providerId . ' is not a compatible NextSearchProvider'
 			);
 		}
@@ -112,23 +111,24 @@ class ProviderService {
 	 * @return INextSearchProvider[]
 	 */
 	public function getProviders() {
+		$this->loadProviders();
+
 		return $this->providers;
 	}
+
 
 	/**
 	 * @param string $appId
 	 *
-	 * @throws NextSearchProviderInfoException
-	 * @throws NextSearchProviderIsNotUniqueException
+	 * @throws ProviderIsNotUniqueException
 	 */
-	private function loadProviderFromApp($appId) {
+	private function loadProvidersFromApp($appId) {
 		$appInfo = OC_App::getAppInfo($appId);
-		if (!key_exists('fullnextsearch', $appInfo)) {
+		if (!key_exists('fullnextsearch', $appInfo)
+			|| !key_exists(
+				'provider', $appInfo['fullnextsearch']
+			)) {
 			return;
-		}
-
-		if (!key_exists('provider', $appInfo['fullnextsearch'])) {
-			throw new NextSearchProviderInfoException('wrong syntax in ' . $appId . ' info.xml');
 		}
 
 		$providers = $appInfo['fullnextsearch']['provider'];
@@ -153,12 +153,12 @@ class ProviderService {
 	/**
 	 * @param INextSearchProvider $provider
 	 *
-	 * @throws NextSearchProviderIsNotUniqueException
+	 * @throws ProviderIsNotUniqueException
 	 */
 	private function providerIdMustBeUnique(INextSearchProvider $provider) {
 		foreach ($this->providers AS $knownProvider) {
 			if ($knownProvider->getId() === $provider->getId()) {
-				throw new NextSearchProviderIsNotUniqueException(
+				throw new ProviderIsNotUniqueException(
 					'NextSearchProvider ' . $provider->getId() . ' already exist'
 				);
 			}

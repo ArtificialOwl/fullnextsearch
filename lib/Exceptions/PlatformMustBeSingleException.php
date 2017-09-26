@@ -27,7 +27,7 @@
 
 namespace OCA\FullNextSearch\Exceptions;
 
-class NextSearchProviderInfoException extends \Exception {
+class PlatformMustBeSingleException extends \Exception {
 
 }
 

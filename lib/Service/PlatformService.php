@@ -30,91 +30,131 @@ namespace OCA\FullNextSearch\Service;
 use Exception;
 use OC\App\AppManager;
 use OC_App;
-use OCA\FullNextSearch\AppInfo\Application;
-use OCA\FullNextSearch\Exceptions\NextSearchPlatformIsNotCompatibleException;
-use OCA\FullNextSearch\Exceptions\NextSearchPlatformMustBeSingleException;
-use OCA\FullNextSearch\Exceptions\NextSearchPlatformNotDefinedException;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderInfoException;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotCompatibleException;
-use OCA\FullNextSearch\Exceptions\NextSearchProviderIsNotUniqueException;
+use OCA\FullNextSearch\Exceptions\PlatformDoesNotExistException;
+use OCA\FullNextSearch\Exceptions\PlatformIsNotCompatibleException;
+use OCA\FullNextSearch\Exceptions\PlatformNotSelectedException;
 use OCA\FullNextSearch\INextSearchPlatform;
-use OCA\FullNextSearch\INextSearchProvider;
 
 class PlatformService {
+
+	/** @var AppManager */
+	private $appManager;
+
+	/** @var ConfigService */
+	private $configService;
 
 	/** @var MiscService */
 	private $miscService;
 
+	/** @var array */
+	private $platforms = [];
+
 	/** @var INextSearchPlatform */
 	private $platform;
+
+	/** @var bool */
+	private $platformsLoaded = false;
 
 
 	/**
 	 * ProviderService constructor.
 	 *
+	 * @param AppManager $appManager
+	 * @param ConfigService $configService
 	 * @param MiscService $miscService
 	 *
-	 * @throws Exception
 	 */
-	function __construct(MiscService $miscService) {
+	function __construct(AppManager $appManager, ConfigService $configService, MiscService $miscService
+	) {
+		$this->appManager = $appManager;
+
+		$this->configService = $configService;
 		$this->miscService = $miscService;
 	}
 
 
-	/**
-	 * Load all NextSearchProviders set in any info.xml file
-	 *
-	 * @throws Exception
-	 */
-	public function loadPlatform() {
-		if ($this->platform !== null) {
-			return;
-		}
-
+	public function getPlatform() {
 		try {
-			$platformId = $this->getPlatformFromInfoXml();
-			$platform = \OC::$server->query((string)$platformId);
-			if (!($platform instanceof INextSearchPlatform)) {
-				throw new NextSearchPlatformIsNotCompatibleException(
-					$platformId . ' is not a compatible NextSearchPlatform'
-				);
-			}
-
-			$this->platform = $platform;
+			$this->loadPlatform();
 		} catch (Exception $e) {
 			$this->miscService->log($e->getMessage());
 			throw $e;
 		}
-	}
 
-
-	private function getPlatformFromInfoXml() {
-		$appInfo = \OC_App::getAppInfo(Application::APP_NAME);
-		if (!key_exists('fullnextsearch', $appInfo)
-			|| !key_exists(
-				'platform', $appInfo['fullnextsearch']
-			)) {
-			throw new NextSearchPlatformNotDefinedException('no platform defined in info.xml');
-		}
-
-		$platformId = $appInfo['fullnextsearch']['platform'];
-		if (is_array($platformId)) {
-			throw new NextSearchPlatformMustBeSingleException(
-				'only one platform can be assigned in info.xml'
-			);
-		}
-
-		return $platformId;
+		return $this->platform;
 	}
 
 
 	/**
-	 * @return INextSearchPlatform
+	 * @throws Exception
 	 */
-	public function getPlatform() {
-		$this->loadPlatform();
+	private function loadPlatforms() {
+		if ($this->platformsLoaded) {
+			return;
+		}
 
-		return $this->platform;
+		try {
+			$apps = $this->appManager->getInstalledApps();
+			foreach ($apps as $appId) {
+				$this->loadPlatformsFromApp($appId);
+			}
+
+			$this->platformsLoaded = true;
+		} catch (Exception $e) {
+			$this->miscService->log($e->getMessage());
+			throw $e;
+		}
+
+	}
+
+
+	private function loadPlatform() {
+		if ($this->platform !== null) {
+			return;
+		}
+
+		$selected = $this->configService->getAppValue(ConfigService::SEARCH_PLATFORM, '');
+		$this->loadPlatforms();
+
+		if ($selected === '') {
+			throw new PlatformNotSelectedException('Admin have not select any NextSearchPlatform');
+		}
+
+		if (!in_array($selected, $this->platforms)) {
+			throw new PlatformDoesNotExistException(
+				'NextSearchPlatform ' . $selected . ' is not available'
+			);
+		}
+
+		$platform = \OC::$server->query((string)$selected);
+		if (!($platform instanceof INextSearchPlatform)) {
+			throw new PlatformIsNotCompatibleException(
+				$selected . ' is not a compatible NextSearchPlatform'
+			);
+		}
+
+		$this->platform = $platform;
+	}
+
+
+	/**
+	 * @param string $appId
+	 */
+	private function loadPlatformsFromApp($appId) {
+		$appInfo = OC_App::getAppInfo($appId);
+		if (!key_exists('fullnextsearch', $appInfo)
+			|| !key_exists(
+				'platform', $appInfo['fullnextsearch']
+			)) {
+			return;
+		}
+
+		$platforms = $appInfo['fullnextsearch']['platform'];
+		if (!is_array($platforms)) {
+			$platforms = [$platforms];
+		}
+
+		$this->platforms = array_merge($this->platforms, $platforms);
 	}
 
 

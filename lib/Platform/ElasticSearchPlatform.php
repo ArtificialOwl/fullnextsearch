@@ -27,6 +27,10 @@
 
 namespace OCA\FullNextSearch\Platform;
 
+use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost;
+use Elasticsearch\Common\Exceptions\MaxRetriesException;
+use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\INextSearchDocument;
 use OCA\FullNextSearch\INextSearchPlatform;
@@ -47,6 +51,34 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 		$container = $app->getContainer();
 		$this->miscService = $container->query(MiscService::class);
+
+		$hosts = [
+			[
+				'host'   => '127.0.0.1',
+				'port'   => '9200',
+				'scheme' => 'http',
+				'user'   => 'username',
+				'pass'   => 'password'
+			]
+		];
+		$client = ClientBuilder::create()
+							   ->setHosts($hosts)
+							   ->setRetries(2)
+							   ->build();
+
+		try {
+			echo '___';
+			$toto = $client->search('toto');
+			echo '$$$ ' . json_encode($toto);
+		} catch (CouldNotConnectToHost $e) {
+			echo 'COULD NOT CONNECT TO HOST';
+			$previous = $e->getPrevious();
+			if ($previous instanceof MaxRetriesException) {
+				echo "Max retries!";
+			}
+		} catch (Exception $e) {
+			echo '>>> ' . $e->getMessage();
+		}
 	}
 
 
@@ -85,8 +117,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	 */
 	public function upgrade() {
 	}
-
-
 
 
 	/**

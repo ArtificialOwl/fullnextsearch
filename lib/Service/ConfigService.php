@@ -33,11 +33,11 @@ use OCP\Util;
 
 class ConfigService {
 
-	const APP_TEST = 'test';
+	const SEARCH_PLATFORM = 'search_platform';
 	const APP_TEST_PERSONAL = 'test_personal';
 
 	private $defaults = [
-		self::APP_TEST          => '1',
+		self::SEARCH_PLATFORM   => '',
 		self::APP_TEST_PERSONAL => '0'
 	];
 

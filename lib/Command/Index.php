@@ -27,6 +27,7 @@
 
 namespace OCA\FullNextSearch\Command;
 
+use Exception;
 use OC\Core\Command\Base;
 use OCA\FullNextSearch\Service\IndexService;
 use OCA\FullNextSearch\Service\MiscService;
@@ -67,9 +68,16 @@ class Index extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('index');
 
-		$this->indexService->indexContentFromUser('cult');
-		$this->indexService->indexContentFromUser('test1');
-		$this->indexService->indexContentFromUser('test2');
+		try {
+
+
+			$this->indexService->indexContentFromUser('cult');
+			$this->indexService->indexContentFromUser('test1');
+			$this->indexService->indexContentFromUser('test2');
+		} catch (Exception $e) {
+			echo 'EXCEPTION !!';
+			throw $e;
+		}
 	}
 
 
