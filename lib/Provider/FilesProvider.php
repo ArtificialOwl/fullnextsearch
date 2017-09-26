@@ -30,7 +30,7 @@ namespace OCA\FullNextSearch\Provider;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\Exceptions\NoResultException;
 use OCA\FullNextSearch\INextSearchProvider;
-use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
+use OCA\FullNextSearch\Provider\Files\NextSearch\FilesDocument;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesResult;
 use OCA\FullNextSearch\Provider\Files\Service\FilesService;
 use OCA\FullNextSearch\Service\MiscService;
@@ -44,7 +44,7 @@ class FilesProvider implements INextSearchProvider {
 	/** @var MiscService */
 	private $miscService;
 
-	/** @var FilesIndex[] */
+	/** @var FilesDocument[] */
 	private $files = [];
 
 	/**

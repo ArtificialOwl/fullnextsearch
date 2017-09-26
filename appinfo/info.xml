@@ -40,6 +40,7 @@
 
 	<fullnextsearch>
 		<provider>OCA\FullNextSearch\Provider\FilesProvider</provider>
+		<platform>OCA\FullNextSearch\Platform\ElasticSearchPlatform</platform>
 	</fullnextsearch>
 
 </info>

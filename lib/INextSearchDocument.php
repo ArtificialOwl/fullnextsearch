@@ -25,46 +25,15 @@
  *
  */
 
-namespace OCA\FullNextSearch\Service;
+namespace OCA\FullNextSearch;
 
-use OCA\FullNextSearch\INextSearchIndex;
-use OCA\FullNextSearch\INextSearchProvider;
-
-class ElasticService {
-
-	/** @var MiscService */
-	private $miscService;
-
+interface INextSearchDocument {
 
 	/**
-	 * IndexService constructor.
+	 * must returns a unique Id
 	 *
-	 * @param MiscService $miscService
+	 * @return string|integer
 	 */
-	function __construct(MiscService $miscService) {
-		$this->miscService = $miscService;
-	}
-
-
-	/**
-	 * @param INextSearchProvider $provider
-	 * @param INextSearchIndex[] $items
-	 */
-	public function indexItems(INextSearchProvider $provider, $items) {
-		foreach ($items as $item) {
-			echo ' < ' . $item->getId() . "\n";
-
-			$this->indexItem($provider, $item);
-		}
-	}
-
-
-
-	public function indexItem(INextSearchProvider $provider, $item) {
-
-	}
-
-
-
+	public function getId();
 
 }

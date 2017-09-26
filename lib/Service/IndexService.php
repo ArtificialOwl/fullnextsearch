@@ -37,8 +37,8 @@ class IndexService {
 	/** @var ProviderService */
 	private $providerService;
 
-	/** @var ElasticService */
-	private $elasticService;
+	/** @var PlatformService */
+	private $platformService;
 
 	/** @var MiscService */
 	private $miscService;
@@ -48,14 +48,12 @@ class IndexService {
 	 * IndexService constructor.
 	 *
 	 * @param ProviderService $providerService
-	 * @param ElasticService $elasticService
+	 * @param PlatformService $platformService
 	 * @param MiscService $miscService
 	 */
-	function __construct(
-		ProviderService $providerService, ElasticService $elasticService, MiscService $miscService
-	) {
+	function __construct(ProviderService $providerService, PlatformService $platformService, MiscService $miscService) {
 		$this->providerService = $providerService;
-		$this->elasticService = $elasticService;
+		$this->platformService = $platformService;
 		$this->miscService = $miscService;
 	}
 
@@ -74,7 +72,7 @@ class IndexService {
 			for ($i = 0; $i < 1000; $i++) {
 				try {
 					$items = $provider->generateIndex(self::INDEX_CHUNK_SIZE);
-					$this->elasticService->indexItems($provider, $items);
+					$this->platformService->getPlatform()->indexDocuments($provider, $items);
 				} catch (Exception $e) {
 					continue(2);
 				}

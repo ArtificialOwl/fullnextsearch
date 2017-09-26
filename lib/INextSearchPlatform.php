@@ -27,10 +27,11 @@
 
 namespace OCA\FullNextSearch;
 
-use OCA\FullNextSearch\Exceptions\NoResultException;
+use Doctrine\DBAL\Exception\InvalidFieldNameException;
 
-interface INextSearchProvider {
+interface INextSearchPlatform {
 
+	public function load();
 
 	/**
 	 * must returns a unique Id
@@ -42,51 +43,29 @@ interface INextSearchProvider {
 	/**
 	 * Load the search provider
 	 */
-	public function load();
+	public function create();
+
+
+	public function upgrade();
 
 
 	/**
-	 * Called on switch to new user
+	 * @param INextSearchProvider $provider
+	 * @param INextSearchDocument[] $documents
 	 *
-	 * @param $userId
-	 *
-	 * @return
+	 * @return mixed
 	 */
-	public function initUser($userId);
+	public function indexDocuments(INextSearchProvider $provider, $documents);
 
 
 	/**
-	 * Called when user is not needed anymore.
-	 */
-	public function endUser();
-
-
-	/**
-	 * Called at the end of the use of the provider
-	 */
-	public function unload();
-
-	/**
-	 * generate data related to index
+	 * @param INextSearchProvider $provider
+	 * @param INextSearchDocument $document
 	 *
-	 * @param int $chunkSize
-	 *
-	 * @return INextSearchDocument[]
+	 * @return mixed
 	 */
-	public function generateIndex($chunkSize);
+	public function indexDocument(INextSearchProvider $provider, INextSearchDocument $document);
 
-
-	/**
-	 * searching string regarding userId
-	 *
-	 * @param string $userId
-	 * @param string $needle
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchResult[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function search($userId, $needle, $start, $size);
+	public function search($string);
 
 }

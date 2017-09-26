@@ -25,26 +25,43 @@
  *
  */
 
-namespace OCA\FullNextSearch\Provider\Files\NextSearch;
+namespace OCA\FullNextSearch\Platform;
 
-use OCA\FullNextSearch\INextSearchIndex;
+use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\INextSearchDocument;
+use OCA\FullNextSearch\INextSearchPlatform;
+use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\Service\MiscService;
 
-class FilesIndex implements INextSearchIndex {
+class ElasticSearchPlatform implements INextSearchPlatform {
 
-	/** @var string|int */
-	private $id;
+	/** @var MiscService */
+	private $miscService;
 
-	/** @var string */
-	private $type;
 
-	/** @var string */
-	private $path;
+	/**
+	 * {@inheritdoc}
+	 */
+	public function load() {
+		$app = new Application();
 
-	/** @var string */
-	private $filename;
+		$container = $app->getContainer();
+		$this->miscService = $container->query(MiscService::class);
+	}
 
-	function __construct($id) {
-		$this->id = $id;
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function indexDocuments(INextSearchProvider $provider, $documents) {
+		foreach ($documents as $item) {
+			echo ' < ' . $item->getId() . "\n";
+		}
+	}
+
+
+	public function indexDocument(INextSearchProvider $provider, INextSearchDocument $document) {
+
 	}
 
 
@@ -52,66 +69,29 @@ class FilesIndex implements INextSearchIndex {
 	 * {@inheritdoc}
 	 */
 	public function getId() {
-		return $this->id;
+		return 'elastic_search';
 	}
 
 
 	/**
-	 * @param string $type
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
-	public function setType($type) {
-		$this->type = $type;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
+	public function create() {
 	}
 
 
 	/**
-	 * @param string $path
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
-	public function setPath($path) {
-		$this->path = $path;
-
-		return $this;
+	public function upgrade() {
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPath() {
-		return $this->path;
-	}
+
 
 
 	/**
-	 * @param $name
-	 *
-	 * @internal param string $path
-	 * @return $this
+	 * {@inheritdoc}
 	 */
-	public function setFilename($name) {
-		$this->filename = $name;
-
-		return $this;
+	public function search($string) {
 	}
-
-	/**
-	 * @return string
-	 */
-	public function getFilename() {
-		return $this->filename;
-	}
-
-
 }

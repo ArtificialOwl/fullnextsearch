@@ -25,68 +25,93 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Provider\Files\NextSearch;
 
-use OCA\FullNextSearch\Exceptions\NoResultException;
+use OCA\FullNextSearch\INextSearchDocument;
 
-interface INextSearchProvider {
+class FilesDocument implements INextSearchDocument {
+
+	/** @var string|int */
+	private $id;
+
+	/** @var string */
+	private $type;
+
+	/** @var string */
+	private $path;
+
+	/** @var string */
+	private $filename;
+
+	function __construct($id) {
+		$this->id = $id;
+	}
 
 
 	/**
-	 * must returns a unique Id
+	 * {@inheritdoc}
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+
+	/**
+	 * @param string $type
 	 *
+	 * @return $this
+	 */
+	public function setType($type) {
+		$this->type = $type;
+
+		return $this;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function getId();
-
-	/**
-	 * Load the search provider
-	 */
-	public function load();
+	public function getType() {
+		return $this->type;
+	}
 
 
 	/**
-	 * Called on switch to new user
+	 * @param string $path
 	 *
-	 * @param $userId
-	 *
-	 * @return
+	 * @return $this
 	 */
-	public function initUser($userId);
+	public function setPath($path) {
+		$this->path = $path;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPath() {
+		return $this->path;
+	}
 
 
 	/**
-	 * Called when user is not needed anymore.
+	 * @param $name
+	 *
+	 * @internal param string $path
+	 * @return $this
 	 */
-	public function endUser();
+	public function setFilename($name) {
+		$this->filename = $name;
 
+		return $this;
+	}
 
 	/**
-	 * Called at the end of the use of the provider
+	 * @return string
 	 */
-	public function unload();
+	public function getFilename() {
+		return $this->filename;
+	}
 
-	/**
-	 * generate data related to index
-	 *
-	 * @param int $chunkSize
-	 *
-	 * @return INextSearchDocument[]
-	 */
-	public function generateIndex($chunkSize);
-
-
-	/**
-	 * searching string regarding userId
-	 *
-	 * @param string $userId
-	 * @param string $needle
-	 * @param int $start
-	 * @param int $size
-	 *
-	 * @return INextSearchResult[]
-	 * @throws NoResultException when no result are available.
-	 */
-	public function search($userId, $needle, $start, $size);
 
 }

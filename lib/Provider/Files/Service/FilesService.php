@@ -28,7 +28,7 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
-use OCA\FullNextSearch\Provider\Files\NextSearch\FilesIndex;
+use OCA\FullNextSearch\Provider\Files\NextSearch\FilesDocument;
 use OCA\FullNextSearch\Service\MiscService;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
@@ -53,7 +53,7 @@ class FilesService {
 	/**
 	 * @param $userId
 	 *
-	 * @return FilesIndex[]
+	 * @return FilesDocument[]
 	 */
 	public function getFiles($userId) {
 		/** @var Folder $root */
@@ -69,7 +69,7 @@ class FilesService {
 	/**
 	 * @param Folder $node
 	 *
-	 * @return FilesIndex[]
+	 * @return FilesDocument[]
 	 */
 	public function getFilesFromDirectory(Folder $node) {
 		$files = $node->getDirectoryListing();
@@ -91,11 +91,11 @@ class FilesService {
 	/**
 	 * @param Node $file
 	 *
-	 * @return FilesIndex
+	 * @return FilesDocument
 	 */
 	private function generateFilesIndexFromFile(Node $file) {
 
-		$index = new FilesIndex($file->getId());
+		$index = new FilesDocument($file->getId());
 		$index->setType($file->getType())
 			  ->setPath($file->getInternalPath())
 			  ->setFilename($file->getName());
@@ -104,9 +104,9 @@ class FilesService {
 	}
 
 	/**
-	 * @param FilesIndex[] $files
+	 * @param FilesDocument[] $files
 	 *
-	 * @return FilesIndex[]
+	 * @return FilesDocument[]
 	 */
 	public function indexFiles($files) {
 

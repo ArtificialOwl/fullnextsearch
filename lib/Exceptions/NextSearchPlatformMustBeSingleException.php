@@ -25,15 +25,9 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Exceptions;
 
-interface INextSearchIndex {
-
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string|integer
-	 */
-	public function getId();
+class NextSearchPlatformMustBeSingleException extends \Exception {
 
 }
+
