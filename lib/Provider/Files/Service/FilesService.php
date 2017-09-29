@@ -143,15 +143,42 @@ class FilesService {
 	 */
 	private function extractContentFromFile(FilesDocument $document) {
 		$userFolder = $this->rootFolder->getUserFolder($document->getOwner());
+		$file = $userFolder->get($document->getPath());
 
-		// TODO: better way to do this --- filter only file with 'text/' in mimetype
-		if (substr($document->getMimetype(), 0, 5) === 'text/') {
+		if ($file->getType() === FileInfo::TYPE_FILE) {
 			/** @var File $file */
-			$file = $userFolder->get($document->getPath());
-			$document->setContent($file->getContent());
+			$this->extractContentFromFileText($document, $file);
+			$this->extractContentFromFilePDF($document, $file);
 		}
 
 		return $document;
 	}
 
+
+	/**
+	 * @param FilesDocument $document
+	 * @param File $file
+	 */
+	private function extractContentFromFileText(FilesDocument $document, File $file) {
+		if (substr($document->getMimetype(), 0, 5) !== 'text/') {
+			return;
+		}
+
+		$document->setContent($file->getContent());
+	}
+
+
+	/**
+	 * @param FilesDocument $document
+	 * @param File $file
+	 */
+	private function extractContentFromFilePDF(FilesDocument $document, File $file) {
+		if ($document->getMimetype() !== 'application/pdf') {
+			return;
+		}
+
+		$content = $file->getContent();
+		$content = base64_encode($content);
+		$document->setContent($content);
+	}
 }

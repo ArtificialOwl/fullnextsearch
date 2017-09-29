@@ -92,7 +92,7 @@ class IndexService {
 			$provider->endUser();
 		}
 
-		$platform->search('foobar');
+		$platform->search('provider');
 
 	}
 

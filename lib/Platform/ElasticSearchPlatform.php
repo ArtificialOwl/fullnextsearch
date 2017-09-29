@@ -73,39 +73,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 										 ->build();
 
 
-			// indexing
-//
-//			$params = [
-//				'index' => $index,
-//				'type'  => 'files',
-//				'id'    => '223',
-//				'body'  => ['testField' => 'abc']
-//			];
-//
-//			$response = $client->index($params);
-//			echo 'Indexing document: ' . json_encode($response) . "\n";
-//
-//
-//			$params =
-//				[
-//					'index' => $index,
-//					'type'  => 'files',
-//					'id'    => '223'
-//				];
-//			echo 'GET: ' . json_encode($client->get($params)) . "\n";
-//
-//
-
-			// search
-//			$params = [
-//				'index' => $index,
-//				'type'  => 'files'
-//				];
-//			$params['body']['query']['match']['testField'] = 'abc';
-//			$toto = $client->search($params);
-//			echo 'Search: ' . json_encode($toto) . "\n";
-
-
 		} catch (CouldNotConnectToHost $e) {
 			echo 'CouldNotConnectToHost';
 			$previous = $e->getPrevious();
@@ -120,7 +87,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 	public function initProvider(INextSearchProvider $provider) {
 		// mapping
-
 		$map = [
 			'index' => $provider->getId()
 		];
@@ -129,7 +95,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			$map = $provider->improveMappingForElasticSearch($map);
 		}
 
-		// TODO: we delete index each time for TEST !
+		// TODO: we delete index each time (testing) !
 		$this->client->indices()
 					 ->delete($map);
 
@@ -151,7 +117,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 	public function indexDocument(INextSearchProvider $provider, NextSearchDocument $document) {
 
-//		$doc_str = base64_encode($binary);
 		$article = array();
 		$article['index'] = $provider->getId();
 		$article['id'] = $document->getId();
@@ -159,8 +124,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		$article['body'] = array('file' => $document->getContent());
 
 		$result = $this->client->index($article);
-
-//
 		echo 'Indexing: ' . json_encode($result) . "\n";
 	}
 
@@ -201,8 +164,8 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 
 		$params = [
-			'index' => 'index',
-			'type'  => 'files'
+			'index' => 'files',
+			'type'  => 'notype'
 		];
 		$params['body']['query']['match']['file'] = $string;
 //		$params['body']['highlight']['fields']['file'] = array("term_vector" => "with_positions_offsets");
