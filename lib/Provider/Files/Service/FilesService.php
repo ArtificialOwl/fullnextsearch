@@ -28,7 +28,7 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
-use OCA\FullNextSearch\Provider\Files\NextSearch\FilesDocument;
+use OCA\FullNextSearch\Provider\Files\Model\FilesDocument;
 use OCA\FullNextSearch\Service\MiscService;
 use OCP\Files\File;
 use OCP\Files\FileInfo;
@@ -148,7 +148,7 @@ class FilesService {
 		if ($file->getType() === FileInfo::TYPE_FILE) {
 			/** @var File $file */
 			$this->extractContentFromFileText($document, $file);
-			$this->extractContentFromFilePDF($document, $file);
+			//$this->extractContentFromFilePDF($document, $file);
 		}
 
 		return $document;
@@ -172,13 +172,13 @@ class FilesService {
 	 * @param FilesDocument $document
 	 * @param File $file
 	 */
-	private function extractContentFromFilePDF(FilesDocument $document, File $file) {
-		if ($document->getMimetype() !== 'application/pdf') {
-			return;
-		}
-
-		$content = $file->getContent();
-		$content = base64_encode($content);
-		$document->setContent($content);
-	}
+//	private function extractContentFromFilePDF(FilesDocument $document, File $file) {
+//		if ($document->getMimetype() !== 'application/pdf') {
+//			return;
+//		}
+//
+//		$content = $file->getContent();
+//		$content = base64_encode($content);
+//		$document->setContent($content);
+//	}
 }

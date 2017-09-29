@@ -113,7 +113,7 @@ class PlatformService {
 			return;
 		}
 
-		$selected = $this->configService->getAppValue(ConfigService::SEARCH_PLATFORM, '');
+		$selected = $this->configService->getAppValue(ConfigService::SEARCH_PLATFORM);
 		$this->loadPlatforms();
 
 		if ($selected === '') {

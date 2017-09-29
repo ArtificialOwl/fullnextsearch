@@ -84,7 +84,7 @@ interface INextSearchProvider {
 	 * @param int $start
 	 * @param int $size
 	 *
-	 * @return INextSearchResult[]
+	 * @return NextSearchDocument[]
 	 * @throws NoResultException when no result are available.
 	 */
 	public function search($userId, $needle, $start, $size);

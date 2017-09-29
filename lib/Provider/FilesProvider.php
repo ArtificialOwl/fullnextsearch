@@ -30,6 +30,7 @@ namespace OCA\FullNextSearch\Provider;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\Exceptions\NoResultException;
 use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\NextSearchDocument;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesDocument;
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesResult;
 use OCA\FullNextSearch\Provider\Files\Service\FilesService;
@@ -100,7 +101,7 @@ class FilesProvider implements INextSearchProvider {
 	 * {@inheritdoc}
 	 */
 	public function search($userId, $needle, $start, $size) {
-		return [new FilesResult()];
+		return [new NextSearchDocument()];
 	}
 
 
@@ -110,6 +111,7 @@ class FilesProvider implements INextSearchProvider {
 	public function endUser() {
 		$this->files = [];
 	}
+
 
 	/**
 	 * {@inheritdoc}

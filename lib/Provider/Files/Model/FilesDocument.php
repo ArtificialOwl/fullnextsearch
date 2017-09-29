@@ -25,7 +25,7 @@
  *
  */
 
-namespace OCA\FullNextSearch\Provider\Files\NextSearch;
+namespace OCA\FullNextSearch\Provider\Files\Model;
 
 use OCA\FullNextSearch\NextSearchDocument;
 

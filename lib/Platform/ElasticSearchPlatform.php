@@ -162,7 +162,6 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	 */
 	public function search($string) {
 
-
 		$params = [
 			'index' => 'files',
 			'type'  => 'notype'
