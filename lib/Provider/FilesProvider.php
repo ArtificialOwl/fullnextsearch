@@ -70,7 +70,7 @@ class FilesProvider implements INextSearchProvider {
 	 * {@inheritdoc}
 	 */
 	public function initUser($userId) {
-		$this->files = $this->filesService->getFiles($userId);
+		$this->files = $this->filesService->getFilesFromUser($userId);
 	}
 
 
@@ -83,14 +83,14 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function generateIndex($chunkSize) {
+	public function generateDocuments($chunkSize) {
 
 		if (sizeof($this->files) === 0) {
 			throw new NoResultException();
 		}
 
 		$toIndex = array_splice($this->files, 0, $chunkSize);
-		$result = $this->filesService->indexFiles($toIndex);
+		$result = $this->filesService->generateDocuments($toIndex);
 
 		return $result;
 	}
@@ -115,5 +115,17 @@ class FilesProvider implements INextSearchProvider {
 	 * {@inheritdoc}
 	 */
 	public function unload() {
+	}
+
+
+	/**
+	 * this method is only call when using elastic search platform
+	 *
+	 * @param array $map
+	 *
+	 * @return array
+	 */
+	public function improveMappingForElasticSearch($map) {
+		return $map;
 	}
 }

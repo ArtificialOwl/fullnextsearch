@@ -34,10 +34,12 @@ use OCP\Util;
 class ConfigService {
 
 	const SEARCH_PLATFORM = 'search_platform';
+	const CHUNK_INDEX = 'index_chunk';
 	const APP_TEST_PERSONAL = 'test_personal';
 
 	private $defaults = [
 		self::SEARCH_PLATFORM   => '',
+		self::CHUNK_INDEX       => '1000',
 		self::APP_TEST_PERSONAL => '0'
 	];
 

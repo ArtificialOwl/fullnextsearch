@@ -72,10 +72,9 @@ class Index extends Base {
 
 
 			$this->indexService->indexContentFromUser('cult');
-			$this->indexService->indexContentFromUser('test1');
-			$this->indexService->indexContentFromUser('test2');
+//			$this->indexService->indexContentFromUser('test1');
+//			$this->indexService->indexContentFromUser('test2');
 		} catch (Exception $e) {
-			echo 'EXCEPTION !!';
 			throw $e;
 		}
 	}

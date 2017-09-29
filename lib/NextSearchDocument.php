@@ -25,35 +25,52 @@
  *
  */
 
-namespace OCA\FullNextSearch\Provider\Files\NextSearch;
+namespace OCA\FullNextSearch;
 
-use OCA\FullNextSearch\NextSearchDocument;
+class NextSearchDocument {
 
-class FilesDocument extends NextSearchDocument {
 
-	/** @var string */
-	private $owner;
-
-	/** @var string */
-	private $type;
+	/** @var string|int */
+	private $id;
 
 	/** @var string */
-	private $mimetype;
+	private $content;
 
-	/** @var string */
-	private $path;
+	/** @var array */
+	private $infos;
 
-	/** @var string */
-	private $filename;
+
+	function __construct($id) {
+		$this->id = $id;
+	}
 
 
 	/**
-	 * @param string $owner
+	 * @param int|string $id
 	 *
 	 * @return $this
 	 */
-	public function setOwner($owner) {
-		$this->owner = $owner;
+	public function setId($id) {
+		$this->id = $id;
+
+		return $this;
+	}
+
+	/**
+	 * @return int|string
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+
+	/**
+	 * @param string $content
+	 *
+	 * @return $this
+	 */
+	public function setContent($content) {
+		$this->content = $content;
 
 		return $this;
 	}
@@ -61,85 +78,37 @@ class FilesDocument extends NextSearchDocument {
 	/**
 	 * @return string
 	 */
-	public function getOwner() {
-		return $this->owner;
+	public function getContent() {
+		return $this->content;
 	}
 
 
 	/**
-	 * @param string $type
+	 * @param string $info
+	 * @param mixed $value
 	 *
 	 * @return $this
 	 */
-	public function setType($type) {
-		$this->type = $type;
+	public function setInfo($info, $value) {
+		$this->infos[$info] = $value;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
-	}
-
 
 	/**
-	 * @param string $type
+	 * @param string $info
+	 * @param mixed $default
 	 *
-	 * @return $this
+	 * @return mixed
 	 */
-	public function setMimetype($type) {
-		$this->mimetype = $type;
+	public function getInfo($info, $default = '') {
+		if (!key_exists($info, $this->infos)) {
+			return $default;
+		}
 
-		return $this;
+		return $this->infos[$info];
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getMimetype() {
-		return $this->mimetype;
-	}
-
-
-	/**
-	 * @param string $path
-	 *
-	 * @return $this
-	 */
-	public function setPath($path) {
-		$this->path = $path;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getPath() {
-		return $this->path;
-	}
-
-
-	/**
-	 * @param $name
-	 *
-	 * @internal param string $path
-	 * @return $this
-	 */
-	public function setFilename($name) {
-		$this->filename = $name;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getFilename() {
-		return $this->filename;
-	}
 
 }

@@ -29,6 +29,9 @@ namespace OCA\FullNextSearch;
 
 interface INextSearchPlatform {
 
+	/**
+	 * Load the search provider
+	 */
 	public function load();
 
 	/**
@@ -38,31 +41,37 @@ interface INextSearchPlatform {
 	 */
 	public function getId();
 
-	/**
-	 * Load the search provider
-	 */
+
+	/** on first use */
 	public function create();
 
 
+	/** on test */
+	public function test();
+
+
+	/** on upgrade */
 	public function upgrade();
 
 
 	/**
 	 * @param INextSearchProvider $provider
-	 * @param INextSearchDocument[] $documents
-	 *
-	 * @return mixed
+	 */
+	public function initProvider(INextSearchProvider $provider);
+
+
+	/**
+	 * @param INextSearchProvider $provider
+	 * @param NextSearchDocument[] $documents
 	 */
 	public function indexDocuments(INextSearchProvider $provider, $documents);
 
 
 	/**
 	 * @param INextSearchProvider $provider
-	 * @param INextSearchDocument $document
-	 *
-	 * @return mixed
+	 * @param NextSearchDocument $document
 	 */
-	public function indexDocument(INextSearchProvider $provider, INextSearchDocument $document);
+	public function indexDocument(INextSearchProvider $provider, NextSearchDocument $document);
 
 	public function search($string);
 

@@ -30,11 +30,16 @@ namespace OCA\FullNextSearch\Provider\Files\Service;
 
 use OCA\FullNextSearch\Provider\Files\NextSearch\FilesDocument;
 use OCA\FullNextSearch\Service\MiscService;
+use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
+use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 
 class FilesService {
+
+	/** @var IRootFolder */
+	private $rootFolder;
 
 	/** @var MiscService */
 	private $miscService;
@@ -43,44 +48,47 @@ class FilesService {
 	/**
 	 * ProviderService constructor.
 	 *
+	 * @param IRootFolder $rootFolder
 	 * @param MiscService $miscService
 	 */
-	function __construct(MiscService $miscService) {
+	function __construct(IRootFolder $rootFolder, MiscService $miscService) {
+		$this->rootFolder = $rootFolder;
 		$this->miscService = $miscService;
 	}
 
 
 	/**
-	 * @param $userId
+	 * @param string $userId
 	 *
 	 * @return FilesDocument[]
 	 */
-	public function getFiles($userId) {
+	public function getFilesFromUser($userId) {
 		/** @var Folder $root */
 		$root = \OC::$server->getUserFolder($userId)
 							->get('/');
 
-		$result = $this->getFilesFromDirectory($root);
+		$result = $this->getFilesFromDirectory($userId, $root);
 
 		return $result;
 	}
 
 
 	/**
+	 * @param string $userId
 	 * @param Folder $node
 	 *
 	 * @return FilesDocument[]
 	 */
-	public function getFilesFromDirectory(Folder $node) {
+	public function getFilesFromDirectory($userId, Folder $node) {
 		$files = $node->getDirectoryListing();
 
 		$result = [];
 		foreach ($files as $file) {
 
-			$result[] = $this->generateFilesIndexFromFile($file);
+			$result[] = $this->generateFilesIndexFromFile($userId, $file);
 			if ($file->getType() === FileInfo::TYPE_FOLDER) {
 				/** @var $file Folder */
-				$result = array_merge($result, $this->getFilesFromDirectory($file));
+				$result = array_merge($result, $this->getFilesFromDirectory($userId, $file));
 			}
 		}
 
@@ -89,26 +97,30 @@ class FilesService {
 
 
 	/**
+	 * @param string $userId
 	 * @param Node $file
 	 *
 	 * @return FilesDocument
 	 */
-	private function generateFilesIndexFromFile(Node $file) {
-
+	private function generateFilesIndexFromFile($userId, Node $file) {
 		$index = new FilesDocument($file->getId());
 		$index->setType($file->getType())
-			  ->setPath($file->getInternalPath())
+			  ->setOwner($userId)
+			  ->setMimetype($file->getMimetype())
+			// TODO: better way to do this : we remove the 'files/'
+			  ->setPath(substr($file->getInternalPath(), 6))
 			  ->setFilename($file->getName());
 
 		return $index;
 	}
+
 
 	/**
 	 * @param FilesDocument[] $files
 	 *
 	 * @return FilesDocument[]
 	 */
-	public function indexFiles($files) {
+	public function generateDocuments($files) {
 
 		$index = [];
 		foreach ($files as $file) {
@@ -116,12 +128,30 @@ class FilesService {
 				continue;
 			}
 
-//			echo $file->getId() . ' ' . $file->getPath() . "\n";
+			$this->extractContentFromFile($file);
 			$index[] = $file;
 		}
 
 		return $index;
 	}
 
+
+	/**
+	 * @param FilesDocument $document
+	 *
+	 * @return FilesDocument
+	 */
+	private function extractContentFromFile(FilesDocument $document) {
+		$userFolder = $this->rootFolder->getUserFolder($document->getOwner());
+
+		// TODO: better way to do this --- filter only file with 'text/' in mimetype
+		if (substr($document->getMimetype(), 0, 5) === 'text/') {
+			/** @var File $file */
+			$file = $userFolder->get($document->getPath());
+			$document->setContent($file->getContent());
+		}
+
+		return $document;
+	}
 
 }

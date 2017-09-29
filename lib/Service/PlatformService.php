@@ -133,6 +133,7 @@ class PlatformService {
 			);
 		}
 
+		$platform->load();
 		$this->platform = $platform;
 	}
 

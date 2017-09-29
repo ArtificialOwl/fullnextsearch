@@ -32,7 +32,8 @@ use \Exception;
 class IndexService {
 
 
-	const INDEX_CHUNK_SIZE = 3;
+	/** @var ConfigService */
+	private $configService;
 
 	/** @var ProviderService */
 	private $providerService;
@@ -47,18 +48,22 @@ class IndexService {
 	/**
 	 * IndexService constructor.
 	 *
+	 * @param ConfigService $configService
 	 * @param ProviderService $providerService
 	 * @param PlatformService $platformService
 	 * @param MiscService $miscService
 	 */
 	function __construct(
-		ProviderService $providerService, PlatformService $platformService, MiscService $miscService
+		ConfigService $configService, ProviderService $providerService, PlatformService $platformService,
+		MiscService $miscService
 	) {
+		$this->configService = $configService;
 		$this->providerService = $providerService;
 		$this->platformService = $platformService;
 		$this->miscService = $miscService;
 	}
 
+//				echo memory_get_usage() . "\n";
 
 	/**
 	 * @param $userId
@@ -67,14 +72,17 @@ class IndexService {
 		$providers = $this->providerService->getProviders();
 		$platform = $this->platformService->getPlatform();
 
-		echo '. userId: ' . $userId . "\n";
 		foreach ($providers AS $provider) {
 
-			echo '  . provider:' . $provider->getId() . "\n";
 			$provider->initUser($userId);
+			$platform->initProvider($provider);
 			for ($i = 0; $i < 1000; $i++) {
 				try {
-					$items = $provider->generateIndex(self::INDEX_CHUNK_SIZE);
+
+					$items = $provider->generateDocuments(
+						(int)$this->configService->getAppValue(ConfigService::CHUNK_INDEX)
+					);
+
 					$platform->indexDocuments($provider, $items);
 				} catch (Exception $e) {
 					continue(2);
@@ -84,7 +92,8 @@ class IndexService {
 			$provider->endUser();
 		}
 
-	}
+		$platform->search('foobar');
 
+	}
 
 }

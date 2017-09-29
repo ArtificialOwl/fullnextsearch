@@ -48,7 +48,7 @@ interface INextSearchProvider {
 	/**
 	 * Called on switch to new user
 	 *
-	 * @param $userId
+	 * @param string $userId
 	 *
 	 * @return
 	 */
@@ -67,13 +67,13 @@ interface INextSearchProvider {
 	public function unload();
 
 	/**
-	 * generate data related to index
+	 * generate documents prior to the indexing
 	 *
 	 * @param int $chunkSize
 	 *
-	 * @return INextSearchDocument[]
+	 * @return NextSearchDocument[]
 	 */
-	public function generateIndex($chunkSize);
+	public function generateDocuments($chunkSize);
 
 
 	/**

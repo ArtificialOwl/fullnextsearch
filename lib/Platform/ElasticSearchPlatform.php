@@ -27,14 +27,15 @@
 
 namespace OCA\FullNextSearch\Platform;
 
+use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost;
 use Elasticsearch\Common\Exceptions\MaxRetriesException;
 use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
-use OCA\FullNextSearch\INextSearchDocument;
 use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\NextSearchDocument;
 use OCA\FullNextSearch\Service\MiscService;
 
 class ElasticSearchPlatform implements INextSearchPlatform {
@@ -42,6 +43,8 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	/** @var MiscService */
 	private $miscService;
 
+	/** @var Client */
+	private $client;
 
 	/**
 	 * {@inheritdoc}
@@ -52,48 +55,113 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		$container = $app->getContainer();
 		$this->miscService = $container->query(MiscService::class);
 
-		$hosts = [
-			[
-				'host'   => '127.0.0.1',
-				'port'   => '9200',
-				'scheme' => 'http',
-				'user'   => 'username',
-				'pass'   => 'password'
-			]
-		];
-		$client = ClientBuilder::create()
-							   ->setHosts($hosts)
-							   ->setRetries(2)
-							   ->build();
-
 		try {
-			echo '___';
-			$toto = $client->search('toto');
-			echo '$$$ ' . json_encode($toto);
+
+			$hosts = [
+				[
+					'host'   => '127.0.0.1',
+					'port'   => '9200',
+					'scheme' => 'http',
+					'user'   => 'username',
+					'pass'   => 'password'
+				]
+			];
+
+			$this->client = ClientBuilder::create()
+										 ->setHosts($hosts)
+										 ->setRetries(2)
+										 ->build();
+
+
+			// indexing
+//
+//			$params = [
+//				'index' => $index,
+//				'type'  => 'files',
+//				'id'    => '223',
+//				'body'  => ['testField' => 'abc']
+//			];
+//
+//			$response = $client->index($params);
+//			echo 'Indexing document: ' . json_encode($response) . "\n";
+//
+//
+//			$params =
+//				[
+//					'index' => $index,
+//					'type'  => 'files',
+//					'id'    => '223'
+//				];
+//			echo 'GET: ' . json_encode($client->get($params)) . "\n";
+//
+//
+
+			// search
+//			$params = [
+//				'index' => $index,
+//				'type'  => 'files'
+//				];
+//			$params['body']['query']['match']['testField'] = 'abc';
+//			$toto = $client->search($params);
+//			echo 'Search: ' . json_encode($toto) . "\n";
+
+
 		} catch (CouldNotConnectToHost $e) {
-			echo 'COULD NOT CONNECT TO HOST';
+			echo 'CouldNotConnectToHost';
 			$previous = $e->getPrevious();
 			if ($previous instanceof MaxRetriesException) {
 				echo "Max retries!";
 			}
 		} catch (Exception $e) {
-			echo '>>> ' . $e->getMessage();
+			echo ' ElasticSearchPlatform::load() Exception --- ' . $e->getMessage() . "\n";
 		}
 	}
 
+
+	public function initProvider(INextSearchProvider $provider) {
+		// mapping
+
+		$map = [
+			'index' => $provider->getId()
+		];
+
+		if (method_exists($provider, 'improveMappingForElasticSearch')) {
+			$map = $provider->improveMappingForElasticSearch($map);
+		}
+
+		// TODO: we delete index each time for TEST !
+		$this->client->indices()
+					 ->delete($map);
+
+		$response = $this->client->indices()
+								 ->create($map);
+		echo 'Create mapping: ' . json_encode($response) . "\n";
+
+	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function indexDocuments(INextSearchProvider $provider, $documents) {
-		foreach ($documents as $item) {
-			echo ' < ' . $item->getId() . "\n";
+		foreach ($documents as $document) {
+			$this->indexDocument($provider, $document);
 		}
 	}
 
 
-	public function indexDocument(INextSearchProvider $provider, INextSearchDocument $document) {
+	public function indexDocument(INextSearchProvider $provider, NextSearchDocument $document) {
 
+//		$doc_str = base64_encode($binary);
+		$article = array();
+		$article['index'] = $provider->getId();
+		$article['id'] = $document->getId();
+		$article['type'] = 'notype';
+		$article['body'] = array('file' => $document->getContent());
+
+		$result = $this->client->index($article);
+
+//
+		echo 'Indexing: ' . json_encode($result) . "\n";
 	}
 
 
@@ -115,6 +183,13 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function test() {
+	}
+
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function upgrade() {
 	}
 
@@ -123,5 +198,18 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	 * {@inheritdoc}
 	 */
 	public function search($string) {
+
+
+		$params = [
+			'index' => 'index',
+			'type'  => 'files'
+		];
+		$params['body']['query']['match']['file'] = $string;
+//		$params['body']['highlight']['fields']['file'] = array("term_vector" => "with_positions_offsets");
+
+		$result = $this->client->search($params);
+		echo 'Search \'' . $string . '\': ' . json_encode($result) . "\n";
+
 	}
+
 }
