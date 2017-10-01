@@ -28,7 +28,7 @@
 namespace OCA\FullNextSearch\Model;
 
 
-class DocumentsAccess {
+class DocumentAccess {
 
 	/** @var string */
 	private $userId;
@@ -41,7 +41,7 @@ class DocumentsAccess {
 
 
 	/**
-	 * DocumentsAccess constructor.
+	 * DocumentAccess constructor.
 	 *
 	 * @param string $userId
 	 */

@@ -37,7 +37,7 @@ use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\NextSearchDocument;
 use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Model\DocumentsAccess;
+use OCA\FullNextSearch\Model\DocumentAccess;
 ;
 
 class ElasticSearchPlatform implements INextSearchPlatform {
@@ -162,7 +162,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function search(INextSearchProvider $provider, DocumentsAccess $access, $string) {
+	public function search(INextSearchProvider $provider, DocumentAccess $access, $string) {
 
 		$params = [
 			'index' => $provider->getId(),

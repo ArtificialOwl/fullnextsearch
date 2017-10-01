@@ -27,11 +27,17 @@
 
 namespace OCA\FullNextSearch;
 
+use OCA\FullNextSearch\Model\DocumentAccess;
+use PhpParser\Comment\Doc;
+
 class NextSearchDocument {
 
 
 	/** @var string|int */
 	private $id;
+
+	/** @var DocumentAccess */
+	private $access;
 
 	/** @var string */
 	private $content;
@@ -65,6 +71,26 @@ class NextSearchDocument {
 	public function getId() {
 		return $this->id;
 	}
+
+
+	/**
+	 * @param DocumentAccess $access
+	 *
+	 * @return $this
+	 */
+	public function setAccess(DocumentAccess $access) {
+		$this->access = $access;
+
+		return $this;
+	}
+
+	/**
+	 * @return DocumentAccess
+	 */
+	public function getAccess() {
+		return $this->access;
+	}
+
 
 
 	/**

@@ -28,6 +28,7 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
+use OCA\FullNextSearch\Model\DocumentAccess;
 use OCA\FullNextSearch\Provider\Files\Model\FilesDocument;
 use OCA\FullNextSearch\Service\MiscService;
 use OCP\Files\File;
@@ -164,7 +165,25 @@ class FilesService {
 			return;
 		}
 
+		$access = $this->getDocumentAccessFromFile($file);
+		$document->setAccess($access);
 		$document->setContent($file->getContent());
+	}
+
+
+	/**
+	 * @param File $file
+	 *
+	 * @return DocumentAccess
+	 */
+	private function getDocumentAccessFromFile(File $file) {
+
+		$access = new DocumentAccess($file->getOwner());
+
+		$access->setGroups(['test']);
+		$access->setCircles(['sadsdasda', '324234fsd']);
+
+		return $access;
 	}
 
 

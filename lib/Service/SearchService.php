@@ -27,7 +27,7 @@
 
 namespace OCA\FullNextSearch\Service;
 
-use OCA\FullNextSearch\Model\DocumentsAccess;
+use OCA\FullNextSearch\Model\DocumentAccess;
 use OCA\FullNextSearch\NextSearchDocument;
 
 class SearchService {
@@ -78,7 +78,7 @@ class SearchService {
 		$providers = $this->providerService->getFilteredProviders($providerId);
 		$platform = $this->platformService->getPlatform();
 
-		$access = $this->getDocumentsAccessFromUser($userId);
+		$access = $this->getDocumentAccessFromUser($userId);
 		$result = [];
 		foreach ($providers AS $provider) {
 			$result = array_merge($result, $platform->search($provider, $access, $search));
@@ -91,10 +91,10 @@ class SearchService {
 	/**
 	 * @param $userId
 	 *
-	 * @return DocumentsAccess
+	 * @return DocumentAccess
 	 */
-	private function getDocumentsAccessFromUser($userId) {
-		$rights = new DocumentsAccess($userId);
+	private function getDocumentAccessFromUser($userId) {
+		$rights = new DocumentAccess($userId);
 
 		$rights->setCircles(['qwe234drf']);
 		$rights->setGroups(['test']);
