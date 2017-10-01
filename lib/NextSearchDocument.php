@@ -36,6 +36,9 @@ class NextSearchDocument {
 	/** @var string */
 	private $content;
 
+	/** @var string */
+	private $score;
+
 	/** @var array */
 	private $infos;
 
@@ -80,6 +83,21 @@ class NextSearchDocument {
 	 */
 	public function getContent() {
 		return $this->content;
+	}
+
+
+	/**
+	 * @param string $score
+	 */
+	public function setScore($score) {
+		$this->score = $score;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getScore() {
+		return $this->score;
 	}
 
 

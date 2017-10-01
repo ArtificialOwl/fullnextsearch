@@ -37,6 +37,8 @@ use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\NextSearchDocument;
 use OCA\FullNextSearch\Service\MiscService;
+use OCA\FullNextSearch\Model\DocumentsAccess;
+;
 
 class ElasticSearchPlatform implements INextSearchPlatform {
 
@@ -160,18 +162,41 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function search($string) {
+	public function search(INextSearchProvider $provider, DocumentsAccess $access, $string) {
 
 		$params = [
-			'index' => 'files',
+			'index' => $provider->getId(),
 			'type'  => 'notype'
 		];
 		$params['body']['query']['match']['file'] = $string;
 //		$params['body']['highlight']['fields']['file'] = array("term_vector" => "with_positions_offsets");
 
 		$result = $this->client->search($params);
-		echo 'Search \'' . $string . '\': ' . json_encode($result) . "\n";
 
+		$documents = [];
+		foreach($result['hits']['hits'] as $entry) {
+			$documents[] = $this->parseSearchResult($entry);
+		}
+
+		echo "\n" . '   > Search \'' . $string . '\': ' . json_encode($result) . "\n\n";
+
+		return $documents;
+	}
+
+
+	/**
+	 * @param $entry
+	 *
+	 * @return NextSearchDocument
+	 */
+	private function parseSearchResult($entry)
+	{
+		$document = new NextSearchDocument($entry['_id']);
+
+		$document->setContent($entry['_source']['file']);
+		$document->setScore($entry['_score']);
+
+		return $document;
 	}
 
 }

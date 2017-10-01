@@ -27,7 +27,8 @@
 
 namespace OCA\FullNextSearch\Service;
 
-use \Exception;
+use OCA\FullNextSearch\Model\DocumentsAccess;
+use OCA\FullNextSearch\NextSearchDocument;
 
 class SearchService {
 
@@ -66,16 +67,40 @@ class SearchService {
 //				echo memory_get_usage() . "\n";
 
 
-	public function searchFromUser($userId, $search) {
-		$providers = $this->providerService->getProviders();
+	/**
+	 * @param string $providerId
+	 * @param string $userId
+	 * @param string $search
+	 *
+	 * @return NextSearchDocument[]
+	 */
+	public function search($providerId, $userId, $search) {
+		$providers = $this->providerService->getFilteredProviders($providerId);
 		$platform = $this->platformService->getPlatform();
 
+		$access = $this->getDocumentsAccessFromUser($userId);
+		$result = [];
 		foreach ($providers AS $provider) {
-
+			$result = array_merge($result, $platform->search($provider, $access, $search));
 		}
 
-		$result = $platform->search($search);
-
+		return $result;
 	}
+
+
+	/**
+	 * @param $userId
+	 *
+	 * @return DocumentsAccess
+	 */
+	private function getDocumentsAccessFromUser($userId) {
+		$rights = new DocumentsAccess($userId);
+
+		$rights->setCircles(['qwe234drf']);
+		$rights->setGroups(['test']);
+
+		return $rights;
+	}
+
 
 }

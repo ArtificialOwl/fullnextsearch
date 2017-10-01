@@ -80,7 +80,10 @@ class Search extends Base {
 
 		try {
 
-			$this->searchService->searchFromUser('cult', $input->GetArgument('string'));
+			$result = $this->searchService->search('files', 'cult', $input->getArgument('string'));
+			foreach ($result as $document) {
+				echo '- ' . $document->getId() . ' score:' . $document->getScore() . "\n";
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}

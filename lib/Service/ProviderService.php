@@ -30,6 +30,7 @@ namespace OCA\FullNextSearch\Service;
 use Exception;
 use OC\App\AppManager;
 use OC_App;
+use OCA\FullNextSearch\Exceptions\ProviderDoesNotExistException;
 use OCA\FullNextSearch\Exceptions\ProviderIsNotCompatibleException;
 use OCA\FullNextSearch\Exceptions\ProviderIsNotUniqueException;
 use OCA\FullNextSearch\INextSearchProvider;
@@ -114,6 +115,42 @@ class ProviderService {
 		$this->loadProviders();
 
 		return $this->providers;
+	}
+
+
+	/**
+	 * @param string $providerId
+	 *
+	 * @return INextSearchProvider[]
+	 */
+	public function getFilteredProviders($providerId) {
+		$this->loadProviders();
+
+		$providers = $this->getProviders();
+		if ($providerId === 'all') {
+			return $providers;
+		}
+
+		return [$this->getProvider($providerId)];
+	}
+
+
+	/**
+	 * @param string $providerId
+	 *
+	 * @return INextSearchProvider
+	 * @throws ProviderDoesNotExistException
+	 */
+	public function getProvider($providerId) {
+
+		$providers = $this->getProviders();
+		foreach ($providers as $provider) {
+			if ($provider->getId() === $providerId) {
+				return $provider;
+			}
+		}
+
+		throw new ProviderDoesNotExistException('Provider \'' . $providerId . '\' does not exist');
 	}
 
 
