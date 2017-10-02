@@ -105,6 +105,11 @@ class SearchResult implements \JsonSerializable {
 	}
 
 
+	public function getSize() {
+		return count($this->documents);
+	}
+
+
 	/**
 	 * TODO: remove rawResult by default
 	 */
@@ -118,7 +123,8 @@ class SearchResult implements \JsonSerializable {
 				'name' => $provider->getName()
 			],
 			'raw'       => $this->getRawResult(),
-			'documents' => $this->getDocuments()
+			'documents' => $this->getDocuments(),
+			'size'      => $this->getSize()
 		];
 	}
 }

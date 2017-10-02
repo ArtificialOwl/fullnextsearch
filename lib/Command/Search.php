@@ -66,6 +66,7 @@ class Search extends Base {
 		parent::configure();
 		$this->setName('fullnextsearch:search')
 			 ->setDescription('Search something')
+			 ->addArgument('user', InputArgument::OPTIONAL, 'user')
 			 ->addArgument('string', InputArgument::OPTIONAL, 'needle');
 
 	}
@@ -74,16 +75,15 @@ class Search extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('search');
 
-		if ($input->getArgument('string') === null) {
-			throw new Exception('empty search');
-		}
-
 		try {
+			$result = $this->searchService->search(
+				'files', $input->getArgument('user'), $input->getArgument('string')
+			);
 
-			$result = $this->searchService->search('files', 'cult', $input->getArgument('string'));
 			foreach ($result as $searchResult) {
 				$this->displaySearchResult($searchResult);
 			}
+
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -92,7 +92,8 @@ class Search extends Base {
 
 	private function displaySearchResult(SearchResult $searchResult) {
 
-		echo '> ' . $searchResult->getProvider()->getName() . "\n";
+		echo '> ' . $searchResult->getProvider()
+								 ->getName() . "\n";
 		foreach ($searchResult->getDocuments() as $document) {
 			echo ' - ' . $document->getId() . ' score:' . $document->getScore() . "\n";
 		}

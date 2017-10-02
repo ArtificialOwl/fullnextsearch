@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * FullNextSearch - Full Text Search your Nextcloud.
  *
  * This file is licensed under the Affero General Public License version 3 or
@@ -24,38 +25,39 @@
  *
  */
 
-/** global: api */
-/** global: search */
+
+namespace OCA\FullNextSearch\Model;
+
+use OC\Core\Command\Base;
+use Symfony\Component\Console\Output\OutputInterface;
 
 
-var nav = {
+class ExtendedBase extends Base {
 
-	displayResult: function (res) {
+	/** @var OutputInterface */
+	private $output;
 
-		if (Number(res.meta.size) < 1) {
-			OCA.notification.onFail('Search returned no result');
-			return;
-		}
-
-		var searchResult = res.result;
-
-		for (var i = 0; i < searchResult.length; i++) {
-			nav.displayProviderResult(searchResult[i]);
-		}
-
-		OCA.notification.onSuccess('Search returned ' + res.meta.size + ' result(s)');
-	},
-
-
-	displayResultFail: function () {
-		console.log('failed !');
-	},
-
-
-	displayProviderResult: function (result) {
-		console.log('>> ' + JSON.stringify(result));
-
+	public function __construct() {
+		parent::__construct();
 	}
 
 
-};
+	public function hasBeenInterrupted() {
+		return parent::hasBeenInterrupted();
+	}
+
+
+	/**
+	 * @param OutputInterface $output
+	 */
+	public function setOutput(OutputInterface $output) {
+		$this->output = $output;
+	}
+
+	/**
+	 * @return OutputInterface
+	 */
+	public function getOutput() {
+		return $this->output;
+	}
+}

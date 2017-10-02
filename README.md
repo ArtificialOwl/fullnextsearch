@@ -1,6 +1,9 @@
 # fullnextsearch
 Nextant 2.0
 
+### Note:
+
+PRE-ALPHA - DO NOT INSTALL.
 
 ### install:
 

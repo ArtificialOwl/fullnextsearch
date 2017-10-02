@@ -28,14 +28,15 @@
 namespace OCA\FullNextSearch\Command;
 
 use Exception;
-use OC\Core\Command\Base;
+use OCA\FullNextSearch\Exceptions\InterruptException;
+use OCA\FullNextSearch\Model\ExtendedBase;
 use OCA\FullNextSearch\Service\IndexService;
 use OCA\FullNextSearch\Service\MiscService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class Index extends Base {
+class Index extends ExtendedBase {
 
 	/** @var IndexService */
 	private $indexService;
@@ -68,12 +69,27 @@ class Index extends Base {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('index');
 
+		$this->setOutput($output);
 		try {
 
+			$users = \OC::$server->getUserManager()
+								 ->search('');
 
-			$this->indexService->indexContentFromUser('cult');
-//			$this->indexService->indexContentFromUser('test1');
-//			$this->indexService->indexContentFromUser('test2');
+			foreach ($users as $user) {
+				if ($user->getUID() === 'test1') {
+					continue;
+				}
+
+				if ($this->hasBeenInterrupted()) {
+					throw new InterruptException();
+				}
+
+				$output->writeln(' USER: ' . $user->getUID());
+				$this->indexService->indexContentFromUser($user->getUID(), $this);
+			}
+			
+		} catch (InterruptException $e) {
+			throw new InterruptException('Interrupted by user.');
 		} catch (Exception $e) {
 			throw $e;
 		}

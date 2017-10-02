@@ -29,6 +29,7 @@ namespace OCA\FullNextSearch\Controller;
 
 use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\Model\SearchResult;
 use OCA\FullNextSearch\Service\MiscService;
 use OCA\FullNextSearch\Service\SearchService;
 use OCP\AppFramework\Controller;
@@ -72,13 +73,35 @@ class ApiController extends Controller {
 
 		try {
 			$result = $this->searchService->search($providerId, null, $search);
+			$meta = $this->generateMeta($result);
 
-			return $this->success(['search' => $search, 'provider' => $providerId, 'result' => $result]);
+			return $this->success(
+				['search' => $search, 'provider' => $providerId, 'result' => $result, 'meta' => $meta]
+			);
 		} catch (Exception $e) {
 			return $this->fail(
 				['search' => $search, 'provider' => $providerId, 'error' => $e->getMessage()]
 			);
 		}
+	}
+
+
+	/**
+	 * @param SearchResult[] $result
+	 *
+	 * @return array
+	 */
+	private function generateMeta($result) {
+
+		$meta = [
+			'size' => 0
+		];
+
+		foreach ($result as $searchResult) {
+			$meta['size'] += $searchResult->getSize();
+		}
+
+		return $meta;
 	}
 
 

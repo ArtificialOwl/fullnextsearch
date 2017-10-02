@@ -93,7 +93,7 @@ class SearchService {
 		foreach ($providers AS $provider) {
 			$searchResult = $platform->search($provider, $access, $search);
 			if (sizeof($searchResult->getDocuments()) > 0) {
-				$result[] = $searchResult->getDocuments();
+				$result[] = $searchResult;
 			}
 		}
 

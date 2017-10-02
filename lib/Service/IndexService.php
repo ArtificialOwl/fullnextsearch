@@ -28,6 +28,7 @@
 namespace OCA\FullNextSearch\Service;
 
 use \Exception;
+use OC\Core\Command\Base;
 
 class IndexService {
 
@@ -67,8 +68,9 @@ class IndexService {
 
 	/**
 	 * @param $userId
+	 * @param Base|null $command
 	 */
-	public function indexContentFromUser($userId) {
+	public function indexContentFromUser($userId, Base $command = null) {
 		$providers = $this->providerService->getProviders();
 		$platform = $this->platformService->getPlatform();
 
@@ -83,7 +85,7 @@ class IndexService {
 						(int)$this->configService->getAppValue(ConfigService::CHUNK_INDEX)
 					);
 
-					$platform->indexDocuments($provider, $items);
+					$platform->indexDocuments($provider, $items, $this->validCommand($command));
 				} catch (Exception $e) {
 					continue(2);
 				}
@@ -91,7 +93,24 @@ class IndexService {
 
 			$provider->endUser();
 		}
+	}
 
+
+	/**
+	 * @param Base $command
+	 *
+	 * @return null|Base
+	 */
+	private function validCommand(Base $command) {
+		if ($command === null) {
+			return null;
+		}
+
+		if ($command instanceof Base) {
+			return $command;
+		}
+
+		return null;
 	}
 
 }

@@ -27,6 +27,8 @@
 
 namespace OCA\FullNextSearch;
 
+use OCA\FullNextSearch\Model\SearchDocument;
+
 interface INextSearchProvider {
 
 

@@ -33,9 +33,11 @@ use Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost;
 use Elasticsearch\Common\Exceptions\MaxRetriesException;
 use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\Exceptions\InterruptException;
 use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\Model\DocumentAccess;
+use OCA\FullNextSearch\Model\ExtendedBase;
 use OCA\FullNextSearch\Model\SearchDocument;
 use OCA\FullNextSearch\Model\SearchResult;
 use OCA\FullNextSearch\Service\MiscService;
@@ -90,6 +92,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 	public function initProvider(INextSearchProvider $provider) {
 		// mapping
+		return;
 		$map = [
 			'index' => $provider->getId()
 		];
@@ -108,15 +111,24 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 	}
 
+
 	/**
 	 * {@inheritdoc}
 	 */
-	public function indexDocuments(INextSearchProvider $provider, $documents) {
+	public function indexDocuments(INextSearchProvider $provider, $documents, $command) {
 		foreach ($documents as $document) {
+
+			if ($command !== null) {
+				if ($command->hasBeenInterrupted()) {
+					throw new InterruptException();
+				}
+
+				$this->interactWithCommandDuringIndex($command);
+			}
+
 			$this->indexDocument($provider, $document);
 		}
 	}
-
 
 	/**
 	 * @param INextSearchProvider $provider
@@ -132,6 +144,14 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 		$result = $this->client->index($article);
 		echo 'Indexing: ' . json_encode($result) . "\n";
+	}
+
+
+	/**
+	 * @param ExtendedBase $command
+	 */
+	private function interactWithCommandDuringIndex(ExtendedBase $command) {
+
 	}
 
 

@@ -29,6 +29,7 @@ namespace OCA\FullNextSearch;
 
 
 use OCA\FullNextSearch\Model\DocumentAccess;
+use OCA\FullNextSearch\Model\ExtendedBase;
 use OCA\FullNextSearch\Model\SearchDocument;
 use OCA\FullNextSearch\Model\SearchResult;
 
@@ -66,10 +67,14 @@ interface INextSearchPlatform {
 
 
 	/**
+	 * $command can be null. instanceof ExtendedBase if the method is called from CLI.
+	 * Use it to echo whatever and intercept ^C
+	 *
 	 * @param INextSearchProvider $provider
 	 * @param SearchDocument[] $documents
+	 * @param ExtendedBase $command
 	 */
-	public function indexDocuments(INextSearchProvider $provider, $documents);
+	public function indexDocuments(INextSearchProvider $provider, $documents, $command);
 
 
 	/**
