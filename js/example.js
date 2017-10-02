@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * FullNextSearch - Full Text Search your Nextcloud.
  *
  * This file is licensed under the Affero General Public License version 3 or
@@ -25,17 +24,46 @@
  *
  */
 
-return [
-	'routes' => [
-		['name' => 'Navigation#navigate', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'Settings#getSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'POST'],
-		['name' => 'Settings#getSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'POST'],
-		['name' => 'Api#search', 'url' => '/v1/search/{providerId}/', 'verb' => 'GET'],
-		['name' => 'Circles#settings', 'url' => '/v1/circles/{uniqueId}/settings', 'verb' => 'POST'],
 
-	]
-];
+const nextsearch = OCA.NextSearch.api;
+
+
+var elements = {
+	search_input: null,
+	search_result: null,
+	search_submit: null
+};
+
+const Example = function () {
+	this.init();
+};
+
+Example.prototype = {
+
+	init: function () {
+		var self = this;
+
+		elements.search_input = $('#search_input');
+		elements.search_submit = $('#search_submit');
+		elements.search_result = $('#search_result');
+
+		elements.search_submit.on('click', function () {
+			nextsearch.search('files', elements.search_input.val(), self.searchResult);
+		});
+	},
+
+	searchResult: function (result) {
+		elements.search_result.text(JSON.stringify(result));
+	}
+
+};
+
+
+OCA.NextSearch.Example = Example;
+
+$(document).ready(function () {
+	OCA.NextSearch.example = new Example();
+});
+
 
 

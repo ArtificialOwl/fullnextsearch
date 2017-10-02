@@ -32,6 +32,8 @@ use OCA\FullNextSearch\NextSearchDocument;
 
 class SearchService {
 
+	/** @var string */
+	private $userId;
 
 	/** @var ConfigService */
 	private $configService;
@@ -49,15 +51,17 @@ class SearchService {
 	/**
 	 * IndexService constructor.
 	 *
+	 * @param string $userId
 	 * @param ConfigService $configService
 	 * @param ProviderService $providerService
 	 * @param PlatformService $platformService
 	 * @param MiscService $miscService
 	 */
 	function __construct(
-		ConfigService $configService, ProviderService $providerService, PlatformService $platformService,
-		MiscService $miscService
+		$userId, ConfigService $configService, ProviderService $providerService,
+		PlatformService $platformService, MiscService $miscService
 	) {
+		$this->userId = $userId;
 		$this->configService = $configService;
 		$this->providerService = $providerService;
 		$this->platformService = $platformService;
@@ -75,6 +79,11 @@ class SearchService {
 	 * @return NextSearchDocument[]
 	 */
 	public function search($providerId, $userId, $search) {
+
+		if ($userId === null) {
+			$userId = $this->userId;
+		}
+
 		$providers = $this->providerService->getFilteredProviders($providerId);
 		$platform = $this->platformService->getPlatform();
 

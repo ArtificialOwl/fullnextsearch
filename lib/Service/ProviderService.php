@@ -127,7 +127,7 @@ class ProviderService {
 		$this->loadProviders();
 
 		$providers = $this->getProviders();
-		if ($providerId === 'all') {
+		if ($providerId === '_all') {
 			return $providers;
 		}
 

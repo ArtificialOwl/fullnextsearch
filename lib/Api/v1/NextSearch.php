@@ -25,17 +25,56 @@
  *
  */
 
-return [
-	'routes' => [
-		['name' => 'Navigation#navigate', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'Settings#getSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'POST'],
-		['name' => 'Settings#getSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'POST'],
-		['name' => 'Api#search', 'url' => '/v1/search/{providerId}/', 'verb' => 'GET'],
-		['name' => 'Circles#settings', 'url' => '/v1/circles/{uniqueId}/settings', 'verb' => 'POST'],
-
-	]
-];
+namespace OCA\FullNextSearch\Api\v1;
 
 
+use OCA\FullNextSearch\AppInfo\Application;
+use OCA\FullNextSearch\Service\SearchService;
+use OCP\Util;
+
+class NextSearch {
+
+	const API_VERSION = [0, 1, 0];
+
+	protected static function getContainer() {
+		$app = new Application();
+
+		return $app->getContainer();
+	}
+
+
+	/**
+	 * returns app name
+	 *
+	 * @return string
+	 */
+	public static function appName() {
+		return Application::APP_NAME;
+	}
+
+
+	/**
+	 * FullNextSearch::version();
+	 *
+	 * returns the current version of the API
+	 *
+	 * @return int[]
+	 */
+	public static function version() {
+		return self::API_VERSION;
+	}
+
+
+	public static function addJavascriptAPI() {
+		Util::addScript(Application::APP_NAME, 'nextsearch.v1');
+	}
+
+
+	public static function search($providerId, $search) {
+		$c = self::getContainer();
+
+		return $c->query(SearchService::class)
+				 ->search($providerId, null, $search);
+	}
+
+}

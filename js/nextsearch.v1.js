@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * FullNextSearch - Full Text Search your Nextcloud.
  *
  * This file is licensed under the Affero General Public License version 3 or
@@ -25,17 +24,60 @@
  *
  */
 
-return [
-	'routes' => [
-		['name' => 'Navigation#navigate', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'Settings#getSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsPersonal', 'url' => '/settings/personal', 'verb' => 'POST'],
-		['name' => 'Settings#getSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'GET'],
-		['name' => 'Settings#setSettingsAdmin', 'url' => '/settings/admin', 'verb' => 'POST'],
-		['name' => 'Api#search', 'url' => '/v1/search/{providerId}/', 'verb' => 'GET'],
-		['name' => 'Circles#settings', 'url' => '/v1/circles/{uniqueId}/settings', 'verb' => 'POST'],
+/** global: OC */
+/** global: OCA */
 
-	]
-];
+(function () {
+
+
+	/**
+	 * @constructs NextSearch
+	 */
+	var NextSearch = function () {
+		this.initialize();
+	};
+
+	NextSearch.prototype = {
+
+
+		initialize: function () {
+
+			var self = this;
+
+
+			this.search = function (type, search, callback) {
+				var result = {status: -1};
+				$.ajax({
+					method: 'GET',
+					url: OC.generateUrl('/apps/fullnextsearch/v1/search/' + type),
+					data: {
+						search: search
+					}
+				}).done(function (res) {
+					self.onCallback(callback, res);
+				}).fail(function () {
+					self.onCallback(callback, result);
+				});
+			};
+
+
+			this.onCallback = function (callback, result) {
+			if (callback && (typeof callback === 'function')) {
+					if (typeof result === 'object') {
+						callback(result);
+					} else {
+						callback({status: -1});
+					}
+				}
+			};
+
+		}
+
+	};
+
+	OCA.NextSearch = NextSearch;
+	OCA.NextSearch.api = new NextSearch();
+
+})();
 
 
