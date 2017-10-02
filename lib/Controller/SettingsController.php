@@ -32,7 +32,8 @@ use OCA\FullNextSearch\Service\ConfigService;
 use OCA\FullNextSearch\Service\MiscService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
-use OCP\AppFramework\Http\DataResponse;use OCP\IRequest;
+use OCP\AppFramework\Http\DataResponse;
+use OCP\IRequest;
 
 class SettingsController extends Controller {
 
@@ -50,7 +51,7 @@ class SettingsController extends Controller {
 	 * @param ConfigService $configService
 	 * @param MiscService $miscService
 	 */
-	function __construct( IRequest $request, ConfigService $configService, MiscService $miscService) {
+	function __construct(IRequest $request, ConfigService $configService, MiscService $miscService) {
 		parent::__construct(Application::APP_NAME, $request);
 		$this->configService = $configService;
 		$this->miscService = $miscService;
@@ -63,11 +64,7 @@ class SettingsController extends Controller {
 	 * @return DataResponse
 	 */
 	public function getSettingsPersonal() {
-		$data = [
-			ConfigService::APP_TEST_PERSONAL => $this->configService->getUserValue(
-				ConfigService::APP_TEST_PERSONAL
-			)
-		];
+		$data = [];
 
 		return new DataResponse($data, Http::STATUS_OK);
 	}
@@ -80,9 +77,9 @@ class SettingsController extends Controller {
 	 * @return DataResponse
 	 */
 	public function setSettingsPersonal($data) {
-		$this->configService->setUserValue(
-			ConfigService::APP_TEST_PERSONAL, $data[ConfigService::APP_TEST_PERSONAL]
-		);
+//		$this->configService->setUserValue(
+//			ConfigService::APP_TEST_PERSONAL, $data[ConfigService::APP_TEST_PERSONAL]
+//		);
 
 		return $this->getSettingsAdmin();
 	}

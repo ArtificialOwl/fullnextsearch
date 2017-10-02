@@ -53,14 +53,14 @@ class DocumentAccess {
 	/**
 	 * @param array $groups
 	 */
-	function setGroups($groups) {
+	public function setGroups($groups) {
 		$this->groups = $groups;
 	}
 
 	/**
 	 * @return array
 	 */
-	function getGroups() {
+	public function getGroups() {
 		return $this->groups;
 	}
 
@@ -68,14 +68,14 @@ class DocumentAccess {
 	/**
 	 * @param array $groups
 	 */
-	function setCircles($groups) {
+	public function setCircles($groups) {
 		$this->groups = $groups;
 	}
 
 	/**
 	 * @return array
 	 */
-	function getCircles() {
+	public function getCircles() {
 		return $this->circles;
 	}
 

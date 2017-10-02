@@ -60,7 +60,6 @@ class ApiController extends Controller {
 
 
 	/**
-	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 * @NoSubAdminRequired
 	 *

@@ -65,16 +65,7 @@ class NavigationController extends Controller {
 	 * @return TemplateResponse
 	 */
 	public function navigate() {
-		$data = [
-			ConfigService::SEARCH_PLATFORM   => $this->configService->getAppValue(
-				ConfigService::SEARCH_PLATFORM
-			),
-			ConfigService::APP_TEST_PERSONAL => $this->configService->getUserValue(
-				ConfigService::APP_TEST_PERSONAL
-			)
-		];
-
-		return new TemplateResponse(Application::APP_NAME, 'navigate', $data);
+		return new TemplateResponse(Application::APP_NAME, 'navigate', []);
 	}
 
 

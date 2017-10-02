@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * FullNextSearch - Full Text Search your Nextcloud.
  *
  * This file is licensed under the Affero General Public License version 3 or
@@ -25,53 +24,18 @@
  *
  */
 
-namespace OCA\FullNextSearch;
-
-interface INextSearchProvider {
-
-
-	/**
-	 * must returns a unique Id
-	 *
-	 * @return string
-	 */
-	public function getId();
-
-	/**
-	 * Load the search provider
-	 */
-	public function load();
+/** global: api */
+/** global: search */
 
 
-	/**
-	 * Called on switch to new user
-	 *
-	 * @param string $userId
-	 *
-	 * @return
-	 */
-	public function initUser($userId);
+var nav = {
 
+	displayResult: function (result) {
+		console.log('diuspkla !' + JSON.stringify(result));
+	},
 
-	/**
-	 * Called when user is not needed anymore.
-	 */
-	public function endUser();
+	displayResultFail: function () {
+		console.log('failed !');
+	}
 
-
-	/**
-	 * Called at the end of the use of the provider
-	 */
-	public function unload();
-
-	/**
-	 * generate documents prior to the indexing
-	 *
-	 * @param int $chunkSize
-	 *
-	 * @return NextSearchDocument[]
-	 */
-	public function generateDocuments($chunkSize);
-
-
-}
+};

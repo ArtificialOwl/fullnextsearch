@@ -24,51 +24,42 @@
  *
  */
 
-/** global: OC */
-/** global: OCA */
+/** global: settings */
+/** global: search */
 
 (function () {
-
 
 	/**
 	 * @constructs NextSearch
 	 */
 	var NextSearch = function () {
+		$.extend(NextSearch.prototype, settings);
+		$.extend(NextSearch.prototype, nav);
+		$.extend(NextSearch.prototype, api);
+	};
+
+
+	/**
+	 * @constructs Notification
+	 */
+	var Notification = function () {
 		this.initialize();
 	};
 
-	NextSearch.prototype = {
-
+	Notification.prototype = {
 
 		initialize: function () {
 
-			var self = this;
+			var notyf = new Notyf({
+				delay: 5000
+			});
 
-
-			this.search = function (type, search, callback) {
-				var result = {status: -1};
-				$.ajax({
-					method: 'GET',
-					url: OC.generateUrl('/apps/fullnextsearch/v1/search/' + type),
-					data: {
-						search: search
-					}
-				}).done(function (res) {
-					self.onCallback(callback, res);
-				}).fail(function () {
-					self.onCallback(callback, result);
-				});
+			this.onSuccess = function (text) {
+				notyf.confirm(text);
 			};
 
-
-			this.onCallback = function (callback, result) {
-			if (callback && (typeof callback === 'function')) {
-					if (typeof result === 'object') {
-						callback(result);
-					} else {
-						callback({status: -1});
-					}
-				}
+			this.onFail = function (text) {
+				notyf.alert(text);
 			};
 
 		}
@@ -78,6 +69,8 @@
 	OCA.NextSearch = NextSearch;
 	OCA.NextSearch.api = new NextSearch();
 
+	OCA.Notification = Notification;
+	OCA.notification = new Notification();
+
+
 })();
-
-

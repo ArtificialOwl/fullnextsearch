@@ -66,6 +66,12 @@ class NextSearch {
 
 
 	public static function addJavascriptAPI() {
+		Util::addStyle(Application::APP_NAME, 'notyf');
+		Util::addScript(Application::APP_NAME, 'vendor/notyf');
+		Util::addStyle(Application::APP_NAME, 'nextsearch');
+		Util::addScript(Application::APP_NAME, 'nextsearch.v1.api');
+		Util::addScript(Application::APP_NAME, 'nextsearch.v1.settings');
+		Util::addScript(Application::APP_NAME, 'nextsearch.v1.navigation');
 		Util::addScript(Application::APP_NAME, 'nextsearch.v1');
 	}
 

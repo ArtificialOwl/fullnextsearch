@@ -28,7 +28,6 @@
 namespace OCA\FullNextSearch;
 
 use OCA\FullNextSearch\Model\DocumentAccess;
-use PhpParser\Comment\Doc;
 
 class NextSearchDocument {
 

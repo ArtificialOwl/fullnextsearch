@@ -25,13 +25,13 @@
  */
 
 
-const nextsearch = OCA.NextSearch.api;
+const nextSearch = OCA.NextSearch.api;
 
 
 var elements = {
 	search_input: null,
-	search_result: null,
-	search_submit: null
+	search_submit: null,
+	search_json: null
 };
 
 const Example = function () {
@@ -43,17 +43,20 @@ Example.prototype = {
 	init: function () {
 		var self = this;
 
+		nextSearch.setEntryTemplateId('template_entry');
+		nextSearch.setResultContainerId('search_result');
+
 		elements.search_input = $('#search_input');
 		elements.search_submit = $('#search_submit');
-		elements.search_result = $('#search_result');
+		elements.search_json = $('#search_json');
 
 		elements.search_submit.on('click', function () {
-			nextsearch.search('files', elements.search_input.val(), self.searchResult);
+			nextSearch.search('files', elements.search_input.val(), self.searchResult);
 		});
 	},
 
 	searchResult: function (result) {
-		elements.search_result.text(JSON.stringify(result));
+		elements.search_json.text(JSON.stringify(result));
 	}
 
 };

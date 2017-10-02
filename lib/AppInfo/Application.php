@@ -28,14 +28,8 @@
 namespace OCA\FullNextSearch\AppInfo;
 
 use OCA\FullNextSearch\Controller\SimpleController;
-use OCA\FullNextSearch\Controller\NavigationController;
-use OCA\FullNextSearch\Controller\SettingsController;
-use OCA\FullNextSearch\Service\MiscService;
-use OCA\FullNextSearch\Service\SimpleService;
 use OCA\FullNextSearch\Service\ConfigService;
 use OCP\AppFramework\App;
-use OCP\AppFramework\IAppContainer;
-use OCP\IUser;
 
 class Application extends App {
 
@@ -59,12 +53,10 @@ class Application extends App {
 	}
 
 
-
-	public function registerSearchProvider()
-	{
-		\OC::$server->getSearch()->registerProvider('OCA\FullNextSearch\SearchProvider');
+	public function registerSearchProvider() {
+		\OC::$server->getSearch()
+					->registerProvider('OCA\FullNextSearch\SearchProvider');
 	}
-
 
 
 	/**
@@ -72,24 +64,31 @@ class Application extends App {
 	 */
 	public function registerNavigation() {
 
+		/** @var ConfigService $configService */
+		$configService = \OC::$server->query(ConfigService::class);
+		if ($configService->getAppValue(ConfigService::APP_NAVIGATION) !== '1') {
+			return;
+		}
+
 		$this->getContainer()
 			 ->getServer()
 			 ->getNavigationManager()
-			 ->add(
-				 function() {
-					 $urlGen = \OC::$server->getURLGenerator();
-					 $navName = \OC::$server->getL10N(self::APP_NAME)
-											->t('Full Next Search');
+			 ->add($this->fullNextSearchNavigation());
+	}
 
-					 return [
-						 'id' => self::APP_NAME,
-						 'order' => 5,
-						 'href' => $urlGen->linkToRoute('fullnextsearch.Navigation.navigate'),
-						 'icon' => $urlGen->imagePath(self::APP_NAME, 'ruler.svg'),
-						 'name' => $navName
-					 ];
-				 }
-			 );
+
+	public function fullNextSearchNavigation() {
+		$urlGen = \OC::$server->getURLGenerator();
+		$navName = \OC::$server->getL10N(self::APP_NAME)
+							   ->t('Full Next Search');
+
+		return [
+			'id'    => self::APP_NAME,
+			'order' => 5,
+			'href'  => $urlGen->linkToRoute('fullnextsearch.Navigation.navigate'),
+			'icon'  => $urlGen->imagePath(self::APP_NAME, 'ruler.svg'),
+			'name'  => $navName
+		];
 	}
 
 
@@ -100,5 +99,7 @@ class Application extends App {
 	public function registerSettingsPersonal() {
 		\OCP\App::registerPersonal(self::APP_NAME, 'lib/personal');
 	}
+
+
 }
 

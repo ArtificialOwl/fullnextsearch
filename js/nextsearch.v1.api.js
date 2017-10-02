@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * FullNextSearch - Full Text Search your Nextcloud.
  *
  * This file is licensed under the Affero General Public License version 3 or
@@ -25,56 +24,39 @@
  *
  */
 
-namespace OCA\FullNextSearch\Controller;
+/** global: settings */
+/** global: search */
 
-use OCP\AppFramework\Controller;
-use OCP\AppFramework\Http;
-use OCP\AppFramework\Http\DataResponse;
-use OCP\IRequest;
 
-class SimpleController extends Controller {
+var api = {
 
-	public function __construct(IRequest $request) {
-		parent::__construct(Application::APP_NAME, $request);
+
+	search: function (type, search, callback) {
+		var result = {status: -1};
+		$.ajax({
+			method: 'GET',
+			url: OC.generateUrl('/apps/fullnextsearch/v1/search/' + type),
+			data: {
+				search: search
+			}
+		}).done(function (res) {
+			nav.displayResult(res);
+			api.onCallback(callback, res);
+		}).fail(function () {
+			nav.displayResultFail();
+			api.onCallback(callback, result);
+		});
+	},
+
+
+	onCallback: function (callback, result) {
+		if (callback && (typeof callback === 'function')) {
+			if (typeof result === 'object') {
+				callback(result);
+			} else {
+				callback({status: -1});
+			}
+		}
 	}
 
-
-	/**
-	 * @param $param1
-	 * @param $param2
-	 *
-	 * @NoAdminRequired
-	 *
-	 * @return DataResponse
-	 */
-	public function entry($param1, $param2) {
-		return $this->success(['value' => 42]);
-	}
-
-
-	/**
-	 * @param $data
-	 *
-	 * @return DataResponse
-	 */
-	public function fail($data) {
-		return new DataResponse(
-			array_merge($data, array('status' => 0)),
-			Http::STATUS_NON_AUTHORATIVE_INFORMATION
-		);
-	}
-
-	/**
-	 * @param $data
-	 *
-	 * @return DataResponse
-	 */
-	public function success($data) {
-		return new DataResponse(
-			array_merge($data, array('status' => 1)),
-			Http::STATUS_CREATED
-		);
-	}
-
-
-}
+};

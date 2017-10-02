@@ -60,12 +60,12 @@ class SearchProvider extends Provider {
 	 * @return SearchResult[]
 	 */
 	public function search($query) {
+		$result = [];
+
 		if ($this->userId === null) {
-			return;
+			return $result;
 		}
 
-
-		$result = [];
 		$documents = $this->searchService->search($this->getProviderId(), 'cult', $query);
 
 		foreach ($documents as $document) {

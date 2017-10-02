@@ -16,6 +16,11 @@ Full Next Search
 <input id="search_input" value="" >
 <input id="search_submit" type="submit" value="go">
 
-
-
 <div id="search_result"></div>
+
+<div id="search_json"></div>
+
+
+<script id="template_entry" type="text/template">
+	<div data-entry="%%entry%%">RESULT</div>
+</script>
