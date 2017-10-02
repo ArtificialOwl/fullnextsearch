@@ -37,6 +37,15 @@ interface INextSearchProvider {
 	 */
 	public function getId();
 
+
+	/**
+	 * must returns a display name
+	 *
+	 * @return string
+	 */
+	public function getName();
+
+
 	/**
 	 * Load the search provider
 	 */
@@ -69,7 +78,7 @@ interface INextSearchProvider {
 	 *
 	 * @param int $chunkSize
 	 *
-	 * @return NextSearchDocument[]
+	 * @return SearchDocument[]
 	 */
 	public function generateDocuments($chunkSize);
 

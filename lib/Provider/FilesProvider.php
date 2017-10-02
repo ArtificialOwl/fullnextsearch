@@ -57,6 +57,14 @@ class FilesProvider implements INextSearchProvider {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getName() {
+		return 'Files';
+	}
+
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function load() {
 		$app = new Application();
 

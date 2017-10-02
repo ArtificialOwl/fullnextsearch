@@ -25,11 +25,9 @@
  *
  */
 
-namespace OCA\FullNextSearch;
+namespace OCA\FullNextSearch\Model;
 
-use OCA\FullNextSearch\Model\DocumentAccess;
-
-class NextSearchDocument {
+class SearchDocument implements \JsonSerializable {
 
 
 	/** @var string|int */
@@ -89,7 +87,6 @@ class NextSearchDocument {
 	public function getAccess() {
 		return $this->access;
 	}
-
 
 
 	/**
@@ -153,5 +150,15 @@ class NextSearchDocument {
 		return $this->infos[$info];
 	}
 
+
+	/**
+	 * @return array
+	 */
+	function jsonSerialize() {
+		return [
+			'id'    => $this->getId(),
+			'score' => $this->getScore()
+		];
+	}
 
 }

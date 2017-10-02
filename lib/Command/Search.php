@@ -29,7 +29,7 @@ namespace OCA\FullNextSearch\Command;
 
 use Exception;
 use OC\Core\Command\Base;
-use OCA\FullNextSearch\Service\IndexService;
+use OCA\FullNextSearch\Model\SearchResult;
 use OCA\FullNextSearch\Service\MiscService;
 use OCA\FullNextSearch\Service\SearchService;
 use Symfony\Component\Console\Input\InputArgument;
@@ -81,11 +81,20 @@ class Search extends Base {
 		try {
 
 			$result = $this->searchService->search('files', 'cult', $input->getArgument('string'));
-			foreach ($result as $document) {
-				echo '- ' . $document->getId() . ' score:' . $document->getScore() . "\n";
+			foreach ($result as $searchResult) {
+				$this->displaySearchResult($searchResult);
 			}
 		} catch (Exception $e) {
 			throw $e;
+		}
+	}
+
+
+	private function displaySearchResult(SearchResult $searchResult) {
+
+		echo '> ' . $searchResult->getProvider()->getName() . "\n";
+		foreach ($searchResult->getDocuments() as $document) {
+			echo ' - ' . $document->getId() . ' score:' . $document->getScore() . "\n";
 		}
 	}
 

@@ -28,7 +28,8 @@
 namespace OCA\FullNextSearch\Service;
 
 use OCA\FullNextSearch\Model\DocumentAccess;
-use OCA\FullNextSearch\NextSearchDocument;
+use OCA\FullNextSearch\Model\SearchResult;
+
 
 class SearchService {
 
@@ -76,7 +77,7 @@ class SearchService {
 	 * @param string $userId
 	 * @param string $search
 	 *
-	 * @return NextSearchDocument[]
+	 * @return SearchResult[]
 	 */
 	public function search($providerId, $userId, $search) {
 
@@ -90,7 +91,10 @@ class SearchService {
 		$access = $this->getDocumentAccessFromUser($userId);
 		$result = [];
 		foreach ($providers AS $provider) {
-			$result = array_merge($result, $platform->search($provider, $access, $search));
+			$searchResult = $platform->search($provider, $access, $search);
+			if (sizeof($searchResult->getDocuments()) > 0) {
+				$result[] = $searchResult->getDocuments();
+			}
 		}
 
 		return $result;

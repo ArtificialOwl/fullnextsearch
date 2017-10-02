@@ -27,9 +27,9 @@
 
 namespace OCA\FullNextSearch\Provider\Files\Model;
 
-use OCA\FullNextSearch\NextSearchDocument;
+use OCA\FullNextSearch\Model\SearchDocument;
 
-class FilesDocument extends NextSearchDocument {
+class FilesDocument extends SearchDocument {
 
 	/** @var string */
 	private $owner;

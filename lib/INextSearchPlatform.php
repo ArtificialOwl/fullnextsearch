@@ -29,6 +29,8 @@ namespace OCA\FullNextSearch;
 
 
 use OCA\FullNextSearch\Model\DocumentAccess;
+use OCA\FullNextSearch\Model\SearchDocument;
+use OCA\FullNextSearch\Model\SearchResult;
 
 interface INextSearchPlatform {
 
@@ -65,23 +67,23 @@ interface INextSearchPlatform {
 
 	/**
 	 * @param INextSearchProvider $provider
-	 * @param NextSearchDocument[] $documents
+	 * @param SearchDocument[] $documents
 	 */
 	public function indexDocuments(INextSearchProvider $provider, $documents);
 
 
 	/**
 	 * @param INextSearchProvider $provider
-	 * @param NextSearchDocument $document
+	 * @param SearchDocument $document
 	 */
-	public function indexDocument(INextSearchProvider $provider, NextSearchDocument $document);
+	public function indexDocument(INextSearchProvider $provider, SearchDocument $document);
 
 	/**
 	 * @param INextSearchProvider $provider
 	 * @param DocumentAccess $access
 	 * @param string $string
 	 *
-	 * @return NextSearchDocument[]
+	 * @return SearchResult
 	 */
 	public function search(INextSearchProvider $provider, DocumentAccess $access, $string);
 

@@ -42,7 +42,6 @@ class Application extends App {
 		parent::__construct(self::APP_NAME, $params);
 
 		$this->registerHooks();
-		$this->registerSearchProvider();
 	}
 
 
@@ -50,12 +49,6 @@ class Application extends App {
 	 * Register Hooks
 	 */
 	public function registerHooks() {
-	}
-
-
-	public function registerSearchProvider() {
-		\OC::$server->getSearch()
-					->registerProvider('OCA\FullNextSearch\SearchProvider');
 	}
 
 

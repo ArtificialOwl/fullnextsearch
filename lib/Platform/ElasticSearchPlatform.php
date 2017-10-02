@@ -35,10 +35,11 @@ use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
-use OCA\FullNextSearch\NextSearchDocument;
-use OCA\FullNextSearch\Service\MiscService;
 use OCA\FullNextSearch\Model\DocumentAccess;
-;
+use OCA\FullNextSearch\Model\SearchDocument;
+use OCA\FullNextSearch\Model\SearchResult;
+use OCA\FullNextSearch\Service\MiscService;
+
 
 class ElasticSearchPlatform implements INextSearchPlatform {
 
@@ -117,7 +118,11 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	}
 
 
-	public function indexDocument(INextSearchProvider $provider, NextSearchDocument $document) {
+	/**
+	 * @param INextSearchProvider $provider
+	 * @param SearchDocument $document
+	 */
+	public function indexDocument(INextSearchProvider $provider, SearchDocument $document) {
 
 		$article = array();
 		$article['index'] = $provider->getId();
@@ -172,26 +177,37 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 //		$params['body']['highlight']['fields']['file'] = array("term_vector" => "with_positions_offsets");
 
 		$result = $this->client->search($params);
+		$searchResult = $this->generateSearchResultFromResult($result);
+		$searchResult->setProvider($provider);
 
-		$documents = [];
-		foreach($result['hits']['hits'] as $entry) {
-			$documents[] = $this->parseSearchResult($entry);
+		foreach ($result['hits']['hits'] as $entry) {
+			$searchResult->addDocument($this->parseSearchEntry($entry));
 		}
 
-		echo "\n" . '   > Search \'' . $string . '\': ' . json_encode($result) . "\n\n";
+		return $searchResult;
+	}
 
-		return $documents;
+
+	/**
+	 * @param array $result
+	 *
+	 * @return SearchResult
+	 */
+	private function generateSearchResultFromResult($result) {
+		$searchResult = new SearchResult();
+		$searchResult->setRawResult(json_encode($result));
+
+		return $searchResult;
 	}
 
 
 	/**
 	 * @param $entry
 	 *
-	 * @return NextSearchDocument
+	 * @return SearchDocument
 	 */
-	private function parseSearchResult($entry)
-	{
-		$document = new NextSearchDocument($entry['_id']);
+	private function parseSearchEntry($entry) {
+		$document = new SearchDocument($entry['_id']);
 
 		$document->setContent($entry['_source']['file']);
 		$document->setScore($entry['_score']);

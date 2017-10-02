@@ -92,8 +92,6 @@ class IndexService {
 			$provider->endUser();
 		}
 
-		$platform->search('provider');
-
 	}
 
 }
