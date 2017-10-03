@@ -24,8 +24,11 @@
  *
  */
 
+
+/** global: OC */
 /** global: settings */
 /** global: search */
+/** global: nav */
 
 
 var api = {

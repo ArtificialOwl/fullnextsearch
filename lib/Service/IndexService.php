@@ -97,11 +97,11 @@ class IndexService {
 
 
 	/**
-	 * @param Base $command
+	 * @param null|Base $command
 	 *
 	 * @return null|Base
 	 */
-	private function validCommand(Base $command) {
+	private function validCommand($command) {
 		if ($command === null) {
 			return null;
 		}

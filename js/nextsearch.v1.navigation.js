@@ -24,8 +24,10 @@
  *
  */
 
+/** global: OCA */
 /** global: api */
 /** global: search */
+/** global: settings */
 
 
 var curr = {
@@ -73,7 +75,6 @@ var nav = {
 			if (!current) {
 				current = [];
 			}
-			console.log('>> ' + JSON.stringify(result));
 
 			var divProvider = nav.getDivProvider(providerId, result.provider.name);
 
@@ -135,14 +136,12 @@ var nav = {
 			for (var i = 0; i < oldResult.length; i++) {
 				var entry = oldResult[i];
 				if (!nav.resultExist(entry.id, newResult)) {
-					console.log('___ ' + entry.id);
 					var divResult = nav.getDivResult(entry.id, divProviderResult);
 					divResult.fadeTo(settings.delay_result, 0, function () {
 						$(this).slideUp(settings.delay_result, function () {
 							$(this).remove();
 						});
 					});
-//					divResult.slideDown(settings.delay_result);
 				}
 			}
 		},

@@ -113,19 +113,9 @@ class PlatformService {
 			return;
 		}
 
-		$selected = $this->configService->getAppValue(ConfigService::SEARCH_PLATFORM);
 		$this->loadPlatforms();
 
-		if ($selected === '') {
-			throw new PlatformNotSelectedException('Admin have not select any NextSearchPlatform');
-		}
-
-		if (!in_array($selected, $this->platforms)) {
-			throw new PlatformDoesNotExistException(
-				'NextSearchPlatform ' . $selected . ' is not available'
-			);
-		}
-
+		$selected = $this->getSelectedPlatform();
 		$platform = \OC::$server->query((string)$selected);
 		if (!($platform instanceof INextSearchPlatform)) {
 			throw new PlatformIsNotCompatibleException(
@@ -137,6 +127,22 @@ class PlatformService {
 		$this->platform = $platform;
 	}
 
+
+	private function getSelectedPlatform() {
+		$selected = $this->configService->getAppValue(ConfigService::SEARCH_PLATFORM);
+
+		if ($selected === '') {
+			throw new PlatformNotSelectedException('Admin have not selected any NextSearchPlatform');
+		}
+
+		if (!in_array($selected, $this->platforms)) {
+			throw new PlatformDoesNotExistException(
+				'NextSearchPlatform ' . $selected . ' is not available'
+			);
+		}
+
+		return $selected;
+	}
 
 	/**
 	 * @param string $appId

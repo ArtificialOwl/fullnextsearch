@@ -29,6 +29,7 @@
 namespace OCA\FullNextSearch\Model;
 
 use OC\Core\Command\Base;
+use OCA\FullNextSearch\Exceptions\InterruptException;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -43,7 +44,9 @@ class ExtendedBase extends Base {
 
 
 	public function hasBeenInterrupted() {
-		return parent::hasBeenInterrupted();
+		if (parent::hasBeenInterrupted()) {
+			throw new InterruptException('Interrupted by user.');
+		}
 	}
 
 

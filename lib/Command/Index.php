@@ -80,16 +80,10 @@ class Index extends ExtendedBase {
 					continue;
 				}
 
-				if ($this->hasBeenInterrupted()) {
-					throw new InterruptException();
-				}
-
 				$output->writeln(' USER: ' . $user->getUID());
 				$this->indexService->indexContentFromUser($user->getUID(), $this);
 			}
-			
-		} catch (InterruptException $e) {
-			throw new InterruptException('Interrupted by user.');
+
 		} catch (Exception $e) {
 			throw $e;
 		}

@@ -25,6 +25,7 @@
  */
 
 /** global: OCA */
+/** global: Notyf */
 /** global: settings */
 /** global: nav */
 /** global: api */
