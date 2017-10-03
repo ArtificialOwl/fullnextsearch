@@ -28,7 +28,6 @@
 namespace OCA\FullNextSearch\Command;
 
 use Exception;
-use OCA\FullNextSearch\Exceptions\InterruptException;
 use OCA\FullNextSearch\Model\ExtendedBase;
 use OCA\FullNextSearch\Service\IndexService;
 use OCA\FullNextSearch\Service\MiscService;

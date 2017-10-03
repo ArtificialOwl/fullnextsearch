@@ -29,6 +29,9 @@ namespace OCA\FullNextSearch\Service;
 
 use \Exception;
 use OC\Core\Command\Base;
+use OCA\FullNextSearch\INextSearchPlatform;
+use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\Model\ExtendedBase;
 
 class IndexService {
 
@@ -68,9 +71,9 @@ class IndexService {
 
 	/**
 	 * @param $userId
-	 * @param Base|null $command
+	 * @param ExtendedBase|null $command
 	 */
-	public function indexContentFromUser($userId, Base $command = null) {
+	public function indexContentFromUser($userId, ExtendedBase $command = null) {
 		$providers = $this->providerService->getProviders();
 		$platform = $this->platformService->getPlatform();
 
@@ -79,13 +82,9 @@ class IndexService {
 			$provider->initUser($userId);
 			$platform->initProvider($provider);
 			for ($i = 0; $i < 1000; $i++) {
+
 				try {
-
-					$items = $provider->generateDocuments(
-						(int)$this->configService->getAppValue(ConfigService::CHUNK_INDEX)
-					);
-
-					$platform->indexDocuments($provider, $items, $this->validCommand($command));
+					$this->indexChunk($platform, $provider, $command);
 				} catch (Exception $e) {
 					continue(2);
 				}
@@ -97,9 +96,25 @@ class IndexService {
 
 
 	/**
-	 * @param null|Base $command
+	 * @param INextSearchPlatform $platform
+	 * @param INextSearchProvider $provider
+	 * @param ExtendedBase|null $command
+	 */
+	private function indexChunk(
+		INextSearchPlatform $platform, INextSearchProvider $provider, ExtendedBase $command
+	) {
+		$items = $provider->generateDocuments(
+			(int)$this->configService->getAppValue(ConfigService::CHUNK_INDEX)
+		);
+
+		$platform->indexDocuments($provider, $items, $this->validCommand($command));
+	}
+
+
+	/**
+	 * @param null|ExtendedBase $command
 	 *
-	 * @return null|Base
+	 * @return null|ExtendedBase
 	 */
 	private function validCommand($command) {
 		if ($command === null) {

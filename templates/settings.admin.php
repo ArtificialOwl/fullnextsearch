@@ -1,9 +1,10 @@
 <?php
 
 use OCA\FullNextSearch\AppInfo\Application;
+use OCP\Util;
 
-script(Application::APP_NAME, 'admin');
-style(Application::APP_NAME, 'admin');
+Util::addScript(Application::APP_NAME, 'admin');
+Util::addStyle(Application::APP_NAME, 'admin');
 
 ?>
 

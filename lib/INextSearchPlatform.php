@@ -72,7 +72,7 @@ interface INextSearchPlatform {
 	 *
 	 * @param INextSearchProvider $provider
 	 * @param SearchDocument[] $documents
-	 * @param ExtendedBase $command
+	 * @param ExtendedBase|null $command
 	 */
 	public function indexDocuments(INextSearchProvider $provider, $documents, $command);
 
