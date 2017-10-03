@@ -93,17 +93,19 @@ var nav = {
 			if (oldResult) {
 				nav.divProviderResultRemoveItems(divProvider, newResult, oldResult);
 			}
-
 		},
 
 
 		divProviderResultAddItems: function (divProviderResult, newResult, oldResult) {
 
+			var precItem = null;
 			for (var i = 0; i < newResult.length; i++) {
 				var entry = newResult[i];
 				if (nav.resultExist(entry.id, oldResult)) {
+					precItem = nav.getDivResult(entry.id, divProviderResult);
 					continue;
 				}
+
 				var divResultContent = nav.generateTemplateEntry(entry);
 				divResultContent.fadeTo(0);
 
@@ -113,12 +115,19 @@ var nav = {
 				divResult.attr('data-result', JSON.stringify(entry));
 				divResult.append(divResultContent);
 
-				divProviderResult.append(divResult);
+				if (precItem === null) {
+					divProviderResult.prepend(divResult);
+				} else {
+					precItem.after(divResult);
+				}
+
 				divResult.slideDown(settings.delay_result, function () {
 					$(this).children('.result_template').fadeTo(settings.delay_result, 1);
 				});
 
+				precItem = divResult;
 			}
+
 		},
 
 
@@ -126,9 +135,12 @@ var nav = {
 			for (var i = 0; i < oldResult.length; i++) {
 				var entry = oldResult[i];
 				if (!nav.resultExist(entry.id, newResult)) {
+					console.log('___ ' + entry.id);
 					var divResult = nav.getDivResult(entry.id, divProviderResult);
 					divResult.fadeTo(settings.delay_result, 0, function () {
-						$(this).slideUp(settings.delay_result);
+						$(this).slideUp(settings.delay_result, function () {
+							$(this).remove();
+						});
 					});
 //					divResult.slideDown(settings.delay_result);
 				}
@@ -168,9 +180,9 @@ var nav = {
 		},
 
 
-		getDivResult: function (resultId, divProviderResults) {
+		getDivResult: function (resultId, divProviderResult) {
 			var ret = null;
-			divProviderResults.children('.result_entry').each(function () {
+			divProviderResult.children('.result_entry').each(function () {
 				if ($(this).attr('data-id') === resultId) {
 					ret = $(this);
 				}
