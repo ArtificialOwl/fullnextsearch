@@ -113,7 +113,7 @@ class SearchResult implements \JsonSerializable {
 	/**
 	 * TODO: remove rawResult by default
 	 */
-	function jsonSerialize() {
+	public function jsonSerialize() {
 
 		$provider = $this->getProvider();
 

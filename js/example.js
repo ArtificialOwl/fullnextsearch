@@ -25,6 +25,8 @@
  */
 
 
+/** global: OCA */
+
 const nextSearch = OCA.NextSearch.api;
 
 

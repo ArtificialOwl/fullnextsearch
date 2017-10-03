@@ -24,8 +24,11 @@
  *
  */
 
+/** global: OCA */
 /** global: settings */
-/** global: search */
+/** global: nav */
+/** global: api */
+
 
 (function () {
 

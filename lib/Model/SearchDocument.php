@@ -154,7 +154,7 @@ class SearchDocument implements \JsonSerializable {
 	/**
 	 * @return array
 	 */
-	function jsonSerialize() {
+	public function jsonSerialize() {
 		return [
 			'id'    => $this->getId(),
 			'score' => $this->getScore()
