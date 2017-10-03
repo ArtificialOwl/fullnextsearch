@@ -35,135 +35,179 @@ var curr = {
 
 var nav = {
 
-	displayResult: function (res) {
+		displayResult: function (res) {
 
-		if (Number(res.meta.size) < 1) {
-			OCA.notification.onFail('Search returned no result');
-			return;
-		}
+			if (Number(res.meta.size) < 1) {
+				OCA.notification.onFail('Search returned no result');
+				return;
+			}
 
-		var searchResult = res.result;
+			var searchResult = res.result;
 
-		for (var i = 0; i < searchResult.length; i++) {
-			nav.displayProviderResult(searchResult[i]);
-		}
+			for (var i = 0; i < searchResult.length; i++) {
+				nav.displayProviderResult(searchResult[i]);
+			}
 
-		OCA.notification.onSuccess('Search returned ' + res.meta.size + ' result(s)');
-	},
-
-
-	failedToAjax: function () {
-		OCA.notification.onSuccess(
-			'Failed to connect to cloud, page will be refresh within the next seconds');
-		window.setTimeout(function () {
-			window.location.reload(true);
-		}, 4000);
-	},
+			OCA.notification.onSuccess('Search returned ' + res.meta.size + ' result(s)');
+		},
 
 
-	displayProviderResult: function (result) {
-
-		if (settings.resultContainer === null) {
-			return;
-		}
-
-		var providerId = result.provider.id;
-
-		var current = curr.providerResult[providerId];
-		if (!current) {
-			current = [];
-		}
-		console.log('>> ' + JSON.stringify(result));
-
-		var divProvider = nav.getDivProvider(providerId);
-		if (divProvider === null) {
-			divProvider = nav.generateDivProvider(providerId, result.provider.name);
-			settings.resultContainer.append(divProvider);
-		}
-
-		nav.managerDivProviderResult(divProvider.children('.provider_result'), result.documents,
-			current.documents);
-
-		curr.providerResult[providerId] = result;
-	},
+		failedToAjax: function () {
+			OCA.notification.onSuccess(
+				'Failed to connect to cloud, page will be refresh within few seconds');
+			window.setTimeout(function () {
+				window.location.reload(true);
+			}, 4000);
+		},
 
 
-	managerDivProviderResult: function (divProvider, newResult, oldResult) {
-		nav.divProviderResultAddItems(divProvider, newResult, oldResult);
-		nav.divProviderResultRemoteItems(divProvider, newResult, oldResult);
+		displayProviderResult: function (result) {
 
-	},
+			if (settings.resultContainer === null) {
+				return;
+			}
+
+			var providerId = result.provider.id;
+
+			var current = curr.providerResult[providerId];
+			if (!current) {
+				current = [];
+			}
+			console.log('>> ' + JSON.stringify(result));
+
+			var divProvider = nav.getDivProvider(providerId, result.provider.name);
+
+			nav.managerDivProviderResult(divProvider.children('.provider_result'), result.documents,
+				current.documents);
+
+			divProvider.slideDown(settings.delay_provider, function () {
+				$(this).fadeTo(settings.delay_provider, 1);
+			});
+
+			curr.providerResult[providerId] = result;
+		},
 
 
-	divProviderResultAddItems: function (divProviderResult, newResult, oldResult) {
+		managerDivProviderResult: function (divProvider, newResult, oldResult) {
+			nav.divProviderResultAddItems(divProvider, newResult, oldResult);
+			if (oldResult) {
+				nav.divProviderResultRemoveItems(divProvider, newResult, oldResult);
+			}
 
-		for (var i = 0; i < newResult.length; i++) {
-			var entry = newResult[i];
-			if (!nav.resultExist(entry.id, oldResult)) {
+		},
+
+
+		divProviderResultAddItems: function (divProviderResult, newResult, oldResult) {
+
+			for (var i = 0; i < newResult.length; i++) {
+				var entry = newResult[i];
+				if (nav.resultExist(entry.id, oldResult)) {
+					continue;
+				}
+				var divResultContent = nav.generateTemplateEntry(entry);
+				divResultContent.fadeTo(0);
+
 				var divResult = $('<div>', {class: 'result_entry'});
+				divResult.hide();
 				divResult.attr('data-id', entry.id);
-				divResult.attr('data-result', entry);
-				divResult.html(nav.generateTemplateEntry(entry));
+				divResult.attr('data-result', JSON.stringify(entry));
+				divResult.append(divResultContent);
+
 				divProviderResult.append(divResult);
+				divResult.slideDown(settings.delay_result, function () {
+					$(this).children('.result_template').fadeTo(settings.delay_result, 1);
+				});
+
 			}
-		}
-	},
+		},
 
 
-	divProviderResultRemoteItems: function (newResult, oldResult) {
-	},
+		divProviderResultRemoveItems: function (divProviderResult, newResult, oldResult) {
+			for (var i = 0; i < oldResult.length; i++) {
+				var entry = oldResult[i];
+				if (!nav.resultExist(entry.id, newResult)) {
+					var divResult = nav.getDivResult(entry.id, divProviderResult);
+					divResult.fadeTo(settings.delay_result, 0, function () {
+						$(this).slideUp(settings.delay_result);
+					});
+//					divResult.slideDown(settings.delay_result);
+				}
+			}
+		},
 
 
-	resultExist: function (id, result) {
-		if (!result) {
+		resultExist: function (id, result) {
+			if (!result) {
+				return false;
+			}
+
+			for (var i = 0; i < result.length; i++) {
+				if (result[i].id === id) {
+					return true;
+				}
+			}
+
 			return false;
-		}
+		},
 
-		for (var i = 0; i < result.length; i++) {
-			if (result[i].id === id) {
-				return true;
+
+		getDivProvider: function (providerId, providerName) {
+			var ret = null;
+			settings.resultContainer.children('.provider_header').each(function () {
+				if ($(this).attr('data-id') === providerId) {
+					ret = $(this);
+				}
+			});
+
+			if (ret === null) {
+				ret = nav.generateDivProvider(providerId, providerName);
+				settings.resultContainer.append(ret);
 			}
-		}
 
-		return false;
-	},
+			return ret;
+		},
 
 
-	getDivProvider: function (providerId) {
-		var ret = null;
-		settings.resultContainer.children('.provider_header').each(function () {
-			if ($(this).attr('data-id') === providerId) {
-				ret = $(this);
+		getDivResult: function (resultId, divProviderResults) {
+			var ret = null;
+			divProviderResults.children('.result_entry').each(function () {
+				if ($(this).attr('data-id') === resultId) {
+					ret = $(this);
+				}
+			});
+
+			return ret;
+		},
+
+
+		generateTemplateEntry: function (document) {
+			var divTemplate = settings.entryTemplate;
+			if (divTemplate === null) {
+				divTemplate = settings.entryTemplateDefault;
 			}
-		});
 
-		return ret;
-	},
+			var tmpl = divTemplate.html();
+			tmpl = tmpl.replace(/%%id%%/g, escapeHTML(document.id));
+			var div = $('<div>', {class: 'result_template'});
+			div.html(tmpl);
+
+			return div;
+		},
 
 
-	generateTemplateEntry: function (document) {
-		var div = settings.entryTemplate;
-		if (div === null) {
-			div = settings.entryTemplateDefault;
+		generateDivProvider: function (providerId, providerName) {
+			var divProviderName = $('<div>', {class: 'provider_name'});
+			divProviderName.text(providerName);
+
+			var divProviderResult = $('<div>', {class: 'provider_result'});
+			var divProvider = $('<div>', {class: 'provider_header'});
+			divProvider.hide();
+			divProvider.attr('data-id', providerId);
+			divProvider.append(divProviderName);
+			divProvider.append(divProviderResult);
+
+			return divProvider;
 		}
 
-		var tmpl = div.html();
-		tmpl = tmpl.replace(/%%id%%/g, escapeHTML(document.id));
-
-		return tmpl;
-	},
-
-
-	generateDivProvider: function (providerId, providerName) {
-		var divProviderName = $('<div>', {class: 'provider_name'});
-		divProviderName.text(providerName);
-
-		var divProvider = $('<div>', {class: 'provider_header'});
-		divProvider.attr('data-id', providerId);
-		divProvider.append(divProviderName);
-		divProvider.append($('<div>', {class: 'provider_result'}));
-
-		return divProvider;
 	}
-
-};
+;

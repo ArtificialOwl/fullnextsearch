@@ -29,6 +29,8 @@
 
 var settings = {
 
+	delay_provider: 200,
+	delay_result: 100,
 	resultContainer: null,
 	entryTemplate: null,
 	entryTemplateDefault: $('#default_template_entry'),
