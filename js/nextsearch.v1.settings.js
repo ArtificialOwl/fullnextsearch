@@ -29,8 +29,9 @@
 
 var settings = {
 
-	entryTemplate: null,
 	resultContainer: null,
+	entryTemplate: null,
+	entryTemplateDefault: $('#default_template_entry'),
 
 	setEntryTemplateId: function (templateId) {
 		settings.entryTemplate = $('#' + templateId);

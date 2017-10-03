@@ -43,7 +43,7 @@ var api = {
 			nav.displayResult(res);
 			api.onCallback(callback, res);
 		}).fail(function () {
-			nav.displayResultFail();
+			nav.failedToAjax();
 			api.onCallback(callback, result);
 		});
 	},

@@ -22,5 +22,5 @@ Full Next Search
 
 
 <script id="template_entry" type="text/template">
-	<div data-entry="%%entry%%">RESULT</div>
+	RESULT %%id%%
 </script>
