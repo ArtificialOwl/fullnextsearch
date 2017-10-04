@@ -93,8 +93,8 @@ var nav = {
 			//replaceWith();
 			nav.divProviderResultAddItems(divProvider, newResult, oldResult);
 			if (oldResult) {
-				nav.divProviderResultMoveItems(divProvider, newResult, oldResult);
 				nav.divProviderResultRemoveItems(divProvider, newResult, oldResult);
+				nav.divProviderResultMoveItems(divProvider, newResult, oldResult);
 			}
 		},
 
@@ -151,28 +151,50 @@ var nav = {
 
 		divProviderResultMoveItems: function (divProviderResult, newResult, oldResult) {
 
-			var precItem = null;
+			var precId = '';
+
+			oldResult = nav.recalibrateResult(oldResult, newResult);
 			for (var i = 0; i < newResult.length; i++) {
 				var entry = newResult[i];
-				var divResult = nav.getDivResult(entry.id, divProviderResult);
-
-				pos = nav.getResultIndex(entry.id, oldResult);
-				if (pos > -1 && pos !== i) {
-
-					if (precItem === null) {
-						divResult.fadeTo(settings.delay_result, 0.2, function () {
-							$(this).prependTo(divProviderResult).fadeTo(100, 1);
-						});
-					} else {
-						divResult.fadeTo(settings.delay_result, 0.2, function () {
-							$(this).insertAfter(precItem).fadeTo(100, 1);
-						});
-					}
-
+				if (i > 0) {
+					precId = newResult[i - 1].id;
 				}
 
-				precItem = divResult;
+				var pos = nav.getResultIndex(entry.id, oldResult);
+				if (pos > -1 && pos !== i) {
+					nav.animateMoveDivResult(entry.id, divProviderResult, precId);
+				}
 			}
+		},
+
+
+		animateMoveDivResult: function (entryId, divProviderResult, precId) {
+
+			var divResult = nav.getDivResult(entryId, divProviderResult);
+
+			if (precId === '') {
+				divResult.fadeTo(settings.delay_result, 0.2, function () {
+					$(this).prependTo(divProviderResult).fadeTo(100, 1);
+				});
+			} else {
+				var precItem = nav.getDivResult(precId, divProviderResult);
+				divResult.fadeTo(settings.delay_result, 0.2, function () {
+					$(this).insertAfter(precItem).fadeTo(100, 1);
+				});
+			}
+
+		},
+
+
+		recalibrateResult: function (oldResult, newResult) {
+			var tmpResult = [];
+			for (var i = 0; i < oldResult.length; i++) {
+				if (nav.getResultIndex(oldResult[i].id, newResult) > -1) {
+					tmpResult.push(oldResult[i]);
+				}
+			}
+
+			return tmpResult;
 		},
 
 
