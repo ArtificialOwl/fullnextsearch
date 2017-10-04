@@ -31,7 +31,22 @@
 
 
 var curr = {
-	providerResult: []
+	providerResult: [],
+
+
+	setProviderResult: function (id, value) {
+		curr.providerResult[id] = value;
+	},
+
+	getProviderResult: function (id) {
+		var current = curr.providerResult[id];
+		if (!current) {
+			current = [];
+		}
+
+		return current;
+	}
+
 };
 
 
@@ -69,14 +84,8 @@ var nav = {
 				return;
 			}
 
-			var providerId = result.provider.id;
-
-			var current = curr.providerResult[providerId];
-			if (!current) {
-				current = [];
-			}
-
-			var divProvider = nav.getDivProvider(providerId, result.provider.name);
+			var current = curr.getProviderResult(result.provider.id);
+			var divProvider = nav.getDivProvider(result.provider.id, result.provider.name);
 
 			nav.managerDivProviderResult(divProvider.children('.provider_result'), result.documents,
 				current.documents);
@@ -85,7 +94,7 @@ var nav = {
 				$(this).fadeTo(settings.delay_provider, 1);
 			});
 
-			curr.providerResult[providerId] = result;
+			curr.setProviderResult(result.provider.id, result);
 		},
 
 
@@ -109,15 +118,7 @@ var nav = {
 					continue;
 				}
 
-				var divResultContent = nav.generateTemplateEntry(entry);
-				divResultContent.fadeTo(0);
-
-				var divResult = $('<div>', {class: 'result_entry'});
-				divResult.hide();
-				divResult.attr('data-id', entry.id);
-				divResult.attr('data-result', JSON.stringify(entry));
-				divResult.append(divResultContent);
-
+				var divResult = nav.generateDivResult(entry, nav.generateTemplateEntry(entry));
 				if (precItem === null) {
 					divProviderResult.prepend(divResult);
 				} else {
@@ -251,9 +252,20 @@ var nav = {
 			var tmpl = divTemplate.html();
 			tmpl = tmpl.replace(/%%id%%/g, escapeHTML(document.id));
 			var div = $('<div>', {class: 'result_template'});
-			div.html(tmpl);
+			div.html(tmpl).fadeTo(0);
 
 			return div;
+		},
+
+
+		generateDivResult: function (entry, divResultContent) {
+			var divResult = $('<div>', {class: 'result_entry'});
+			divResult.hide();
+			divResult.attr('data-id', entry.id);
+			divResult.attr('data-result', JSON.stringify(entry));
+			divResult.append(divResultContent);
+
+			return divResult;
 		},
 
 
