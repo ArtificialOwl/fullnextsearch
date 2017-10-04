@@ -90,8 +90,10 @@ var nav = {
 
 
 		managerDivProviderResult: function (divProvider, newResult, oldResult) {
+			//replaceWith();
 			nav.divProviderResultAddItems(divProvider, newResult, oldResult);
 			if (oldResult) {
+				nav.divProviderResultMoveItems(divProvider, newResult, oldResult);
 				nav.divProviderResultRemoveItems(divProvider, newResult, oldResult);
 			}
 		},
@@ -102,7 +104,7 @@ var nav = {
 			var precItem = null;
 			for (var i = 0; i < newResult.length; i++) {
 				var entry = newResult[i];
-				if (nav.resultExist(entry.id, oldResult)) {
+				if (nav.getResultIndex(entry.id, oldResult) > -1) {
 					precItem = nav.getDivResult(entry.id, divProviderResult);
 					continue;
 				}
@@ -135,7 +137,7 @@ var nav = {
 		divProviderResultRemoveItems: function (divProviderResult, newResult, oldResult) {
 			for (var i = 0; i < oldResult.length; i++) {
 				var entry = oldResult[i];
-				if (!nav.resultExist(entry.id, newResult)) {
+				if (nav.getResultIndex(entry.id, newResult) === -1) {
 					var divResult = nav.getDivResult(entry.id, divProviderResult);
 					divResult.fadeTo(settings.delay_result, 0, function () {
 						$(this).slideUp(settings.delay_result, function () {
@@ -147,18 +149,45 @@ var nav = {
 		},
 
 
-		resultExist: function (id, result) {
+		divProviderResultMoveItems: function (divProviderResult, newResult, oldResult) {
+
+			var precItem = null;
+			for (var i = 0; i < newResult.length; i++) {
+				var entry = newResult[i];
+				var divResult = nav.getDivResult(entry.id, divProviderResult);
+
+				pos = nav.getResultIndex(entry.id, oldResult);
+				if (pos > -1 && pos !== i) {
+
+					if (precItem === null) {
+						divResult.fadeTo(settings.delay_result, 0.2, function () {
+							$(this).prependTo(divProviderResult).fadeTo(100, 1);
+						});
+					} else {
+						divResult.fadeTo(settings.delay_result, 0.2, function () {
+							$(this).insertAfter(precItem).fadeTo(100, 1);
+						});
+					}
+
+				}
+
+				precItem = divResult;
+			}
+		},
+
+
+		getResultIndex: function (id, result) {
 			if (!result) {
-				return false;
+				return -1;
 			}
 
 			for (var i = 0; i < result.length; i++) {
 				if (result[i].id === id) {
-					return true;
+					return i;
 				}
 			}
 
-			return false;
+			return -1;
 		},
 
 

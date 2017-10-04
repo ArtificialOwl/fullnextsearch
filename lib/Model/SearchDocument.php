@@ -37,7 +37,13 @@ class SearchDocument implements \JsonSerializable {
 	private $access;
 
 	/** @var string */
+	private $title;
+
+	/** @var string */
 	private $content;
+
+	/** @var array */
+	private $excerpts;
 
 	/** @var string */
 	private $score;
@@ -90,6 +96,21 @@ class SearchDocument implements \JsonSerializable {
 
 
 	/**
+	 * @param string $title
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
+
+
+	/**
 	 * @param string $content
 	 *
 	 * @return $this
@@ -105,6 +126,28 @@ class SearchDocument implements \JsonSerializable {
 	 */
 	public function getContent() {
 		return $this->content;
+	}
+
+
+	/**
+	 * @param array $excerpts
+	 */
+	public function setExcerpts($excerpts) {
+		$this->excerpts = $excerpts;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getExcerpts() {
+		return $this->excerpts;
+	}
+
+	/**
+	 * @param string $excerpt
+	 */
+	public function addExcerpt($excerpt) {
+		$this->excerpts[] = $excerpt;
 	}
 
 
@@ -156,8 +199,10 @@ class SearchDocument implements \JsonSerializable {
 	 */
 	public function jsonSerialize() {
 		return [
-			'id'    => $this->getId(),
-			'score' => $this->getScore()
+			'id'       => $this->getId(),
+			'title'    => $this->getTitle(),
+			'excerpts' => $this->getExcerpts(),
+			'score'    => $this->getScore()
 		];
 	}
 

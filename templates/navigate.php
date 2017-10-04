@@ -12,8 +12,7 @@ Util::addScript(NextSearch::appName(), 'example');
 Full Next Search
 
 
-
-<input id="search_input" value="" >
+<input id="search_input" value="">
 <input id="search_submit" type="submit" value="go">
 
 <div id="search_result"></div>
@@ -22,5 +21,12 @@ Full Next Search
 
 
 <script id="template_entry" type="text/template">
-	RESULT %%id%%
+	<div id="title">title %%id%%</div>
+		<div id="line1">
+		</div>
+		<div id="line2">
+		</div>
+	</div>
+	<div id="score">score</div>
+
 </script>
