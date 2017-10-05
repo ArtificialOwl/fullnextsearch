@@ -43,28 +43,15 @@ var settings = {
 		});
 
 		var left = $('<div>', {class: 'result_entry_left'});
-		left.append($('<div>', {id: 'title'}).text('dsasaddsa'));
+		left.append($('<div>', {id: 'title'}));
 
 		var right = $('<div>', {class: 'result_entry_right'});
-		right.append($('<div>', {id: 'score'}).text('score'));
+		right.append($('<div>', {id: 'score'}));
 
 		tmpl.append(left);
 		tmpl.append(right);
 
 		settings.entryTemplateDefault = $('<div>').append(tmpl);
-
-		// <div class="result_entry_default">
-		// 		<div class="result_entry_left">
-		// 		<div id="title">title %%id%%</div>
-		// 		<div id="line1"></div>
-		// 		<div id="line2"></div>
-		// 		</div>
-		// 		<div class="result_entry_right">
-		// 		<div id="score">score</div>
-		// 		</div>
-		// 		</div>
-
-
 	},
 
 
