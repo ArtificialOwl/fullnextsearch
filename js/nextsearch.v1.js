@@ -40,6 +40,8 @@
 		$.extend(NextSearch.prototype, settings);
 		$.extend(NextSearch.prototype, nav);
 		$.extend(NextSearch.prototype, api);
+
+		settings.generateDefaultTemplate();
 	};
 
 

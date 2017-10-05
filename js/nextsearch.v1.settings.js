@@ -34,7 +34,39 @@ var settings = {
 	delay_result: 100,
 	resultContainer: null,
 	entryTemplate: null,
-	entryTemplateDefault: $('#default_template_entry'),
+	entryTemplateDefault: null,
+
+	generateDefaultTemplate: function () {
+
+		var tmpl = $('<div>', {
+			class: 'result_entry_default'
+		});
+
+		var left = $('<div>', {class: 'result_entry_left'});
+		left.append($('<div>', {id: 'title'}).text('dsasaddsa'));
+
+		var right = $('<div>', {class: 'result_entry_right'});
+		right.append($('<div>', {id: 'score'}).text('score'));
+
+		tmpl.append(left);
+		tmpl.append(right);
+
+		settings.entryTemplateDefault = $('<div>').append(tmpl);
+
+		// <div class="result_entry_default">
+		// 		<div class="result_entry_left">
+		// 		<div id="title">title %%id%%</div>
+		// 		<div id="line1"></div>
+		// 		<div id="line2"></div>
+		// 		</div>
+		// 		<div class="result_entry_right">
+		// 		<div id="score">score</div>
+		// 		</div>
+		// 		</div>
+
+
+	},
+
 
 	setEntryTemplateId: function (templateId, parent) {
 		settings.entryTemplate = $('#' + templateId);
@@ -49,6 +81,6 @@ var settings = {
 		if (settings.parent === null) {
 			return false;
 		}
-		return (typeof method === "function");
+		return (typeof eval('settings.parent. ' + method) === "function");
 	}
 };

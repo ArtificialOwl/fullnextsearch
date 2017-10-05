@@ -57,6 +57,7 @@ Example.prototype = {
 		});
 	},
 
+
 	searchResult: function (result) {
 		elements.search_json.text(JSON.stringify(result));
 	},
@@ -66,6 +67,7 @@ Example.prototype = {
 		this.deleteEmptyDiv(entry, '#line1');
 		this.deleteEmptyDiv(entry, '#line2');
 	},
+
 
 	deleteEmptyDiv: function (entry, divId) {
 		var div = entry.find(divId);
