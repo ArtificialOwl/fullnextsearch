@@ -30,8 +30,8 @@
 var settings = {
 
 	parent: null,
-	delay_provider: 200,
-	delay_result: 100,
+	delay_provider: 600,
+	delay_result: 300,
 	resultContainer: null,
 	entryTemplate: null,
 	entryTemplateDefault: null,

@@ -28,6 +28,7 @@
 namespace OCA\FullNextSearch;
 
 use OCA\FullNextSearch\Model\SearchDocument;
+use OCA\FullNextSearch\Model\SearchResult;
 
 interface INextSearchProvider {
 
@@ -84,5 +85,12 @@ interface INextSearchProvider {
 	 */
 	public function generateDocuments($chunkSize);
 
+
+	/**
+	 * @param SearchResult $searchResult
+	 *
+	 * @return mixed
+	 */
+	public function parseSearchResult(SearchResult $searchResult);
 
 }

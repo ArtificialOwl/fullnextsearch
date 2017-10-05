@@ -43,7 +43,7 @@ class SearchDocument implements \JsonSerializable {
 	private $content;
 
 	/** @var array */
-	private $excerpts;
+	private $excerpts = [];
 
 	/** @var string */
 	private $score;

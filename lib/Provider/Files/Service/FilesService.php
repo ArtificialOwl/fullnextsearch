@@ -148,6 +148,10 @@ class FilesService {
 
 		if ($file->getType() === FileInfo::TYPE_FILE) {
 			/** @var File $file */
+			$access = $this->getDocumentAccessFromFile($file);
+			$document->setAccess($access);
+			$document->setTitle($file->getInternalPath());
+
 			$this->extractContentFromFileText($document, $file);
 			//$this->extractContentFromFilePDF($document, $file);
 		}
@@ -165,8 +169,6 @@ class FilesService {
 			return;
 		}
 
-		$access = $this->getDocumentAccessFromFile($file);
-		$document->setAccess($access);
 		$document->setContent($file->getContent());
 	}
 

@@ -119,6 +119,7 @@ var nav = {
 				}
 
 				var divResult = nav.generateDivResult(entry, nav.generateTemplateEntry(entry));
+				nav.fillDivResult(divResult, entry);
 				if (precItem === null) {
 					divProviderResult.prepend(divResult);
 				} else {
@@ -243,6 +244,20 @@ var nav = {
 		},
 
 
+		fillDivResult: function (divResult, entry) {
+			divResult.find('#title').text(entry.title);
+			divResult.find('#score').text(entry.score);
+
+			if (entry.excerpts.length > 0) {
+				divResult.find('#line1').text(entry.excerpts[0]);
+			}
+
+			if (entry.excerpts.length > 1) {
+				divResult.find('#line2').text(entry.excerpts[1]);
+			}
+		},
+
+
 		generateTemplateEntry: function (document) {
 			var divTemplate = settings.entryTemplate;
 			if (divTemplate === null) {
@@ -251,6 +266,7 @@ var nav = {
 
 			var tmpl = divTemplate.html();
 			tmpl = tmpl.replace(/%%id%%/g, escapeHTML(document.id));
+
 			var div = $('<div>', {class: 'result_template'});
 			div.html(tmpl).fadeTo(0);
 

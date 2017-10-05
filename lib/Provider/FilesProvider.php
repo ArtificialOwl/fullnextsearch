@@ -30,6 +30,7 @@ namespace OCA\FullNextSearch\Provider;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\Exceptions\NoResultException;
 use OCA\FullNextSearch\INextSearchProvider;
+use OCA\FullNextSearch\Model\SearchResult;
 use OCA\FullNextSearch\Provider\Files\Model\FilesDocument;
 use OCA\FullNextSearch\Provider\Files\Service\FilesService;
 use OCA\FullNextSearch\Service\MiscService;
@@ -100,6 +101,16 @@ class FilesProvider implements INextSearchProvider {
 		$result = $this->filesService->generateDocuments($toIndex);
 
 		return $result;
+	}
+
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function parseSearchResult(SearchResult $searchResult) {
+		foreach ($searchResult->getDocuments() as $document) {
+		//	$document->setTitle('sdadsasad ' . $document->getId());
+		}
 	}
 
 

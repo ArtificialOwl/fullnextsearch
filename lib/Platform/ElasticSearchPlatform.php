@@ -31,6 +31,7 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost;
 use Elasticsearch\Common\Exceptions\MaxRetriesException;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Exception;
 use OCA\FullNextSearch\AppInfo\Application;
 use OCA\FullNextSearch\Exceptions\InterruptException;
@@ -90,24 +91,36 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	}
 
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function resetProvider(INextSearchProvider $provider) {
+		$map = $this->generateGlobalMap($provider, false);
+
+		try {
+			$this->client->indices()
+						 ->delete($map);
+		} catch (Missing404Exception $e) {
+		}
+	}
+
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function initProvider(INextSearchProvider $provider) {
-		// mapping
-		return;
-		$map = [
-			'index' => $provider->getId()
-		];
+		$map = $this->generateGlobalMap($provider);
 
 		if (method_exists($provider, 'improveMappingForElasticSearch')) {
 			$map = $provider->improveMappingForElasticSearch($map);
 		}
 
-		// TODO: we delete index each time (testing) !
-		$this->client->indices()
-					 ->delete($map);
+		if (!$this->client->indices()
+						  ->exists($this->generateGlobalMap($provider, false))) {
+			$this->client->indices()
+						 ->create($map);
+		}
 
-		$response = $this->client->indices()
-								 ->create($map);
-		echo 'Create mapping: ' . json_encode($response) . "\n";
 
 	}
 
@@ -130,6 +143,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		}
 	}
 
+
 	/**
 	 * @param INextSearchProvider $provider
 	 * @param SearchDocument $document
@@ -140,7 +154,10 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		$article['index'] = $provider->getId();
 		$article['id'] = $document->getId();
 		$article['type'] = 'notype';
-		$article['body'] = array('file' => $document->getContent());
+		$article['body'] = [
+			'title'   => $document->getTitle(),
+			'content' => $document->getContent()
+		];
 
 		$result = $this->client->index($article);
 		echo 'Indexing: ' . json_encode($result) . "\n";
@@ -193,8 +210,11 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			'index' => $provider->getId(),
 			'type'  => 'notype'
 		];
-		$params['body']['query']['match']['file'] = $string;
-//		$params['body']['highlight']['fields']['file'] = array("term_vector" => "with_positions_offsets");
+		$params['body']['query']['bool']['should'] =
+			[
+				['match' => ['title' => $string]],
+				['match' => ['content' => $string]]
+			];
 
 		$result = $this->client->search($params);
 		$searchResult = $this->generateSearchResultFromResult($result);
@@ -229,10 +249,85 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	private function parseSearchEntry($entry) {
 		$document = new SearchDocument($entry['_id']);
 
-		$document->setContent($entry['_source']['file']);
+		$document->setContent($entry['_source']['content']);
 		$document->setScore($entry['_score']);
+		$document->setTitle($entry['_source']['title']);
 
 		return $document;
 	}
 
+
+	private function generateGlobalMap(INextSearchProvider $provider, $complete = true) {
+		$params = [
+			'index' => $provider->getId()
+		];
+
+		if ($complete === false) {
+			return $params;
+		}
+
+		$params['body'] = [
+			'settings' => [
+				'analysis' => [
+					'filter'      => [
+						'shingle' => [
+							'type' => 'shingle'
+						]
+					],
+					'char_filter' => [
+						'pre_negs'  => [
+							'type'        => 'pattern_replace',
+							'pattern'     => '(\\w+)\\s+((?i:never|no|nothing|nowhere|noone|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint))\\b',
+							'replacement' => '~$1 $2'
+						],
+						'post_negs' => [
+							'type'        => 'pattern_replace',
+							'pattern'     => '\\b((?i:never|no|nothing|nowhere|noone|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint))\\s+(\\w+)',
+							'replacement' => '$1 ~$2'
+						]
+					],
+					'analyzer'    => [
+						$provider->getId() => [
+							'type'      => 'custom',
+							'tokenizer' => 'standard',
+							'filter'    => ['lowercase', 'stop', 'kstem']
+						]
+					]
+				]
+			],
+			'mappings' => [
+				'_default_' => [
+					'properties' => [
+						'title'    => [
+							'type'        => 'text',
+							'analyzer'    => 'files',
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'content'  => [
+							'type'        => 'text',
+							'analyzer'    => 'files',
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'combined' => [
+							'type'        => 'text',
+							'analyzer'    => 'files',
+							'term_vector' => 'yes'
+						],
+						'topics'   => [
+							'type'  => 'text',
+							'index' => 'not_analyzed'
+						],
+						'places'   => [
+							'type'  => 'text',
+							'index' => 'not_analyzed'
+						]
+					]
+				]
+			]
+		];
+
+		return $params;
+	}
 }

@@ -63,6 +63,12 @@ interface INextSearchPlatform {
 	/**
 	 * @param INextSearchProvider $provider
 	 */
+	public function resetProvider(INextSearchProvider $provider);
+
+
+	/**
+	 * @param INextSearchProvider $provider
+	 */
 	public function initProvider(INextSearchProvider $provider);
 
 

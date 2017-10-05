@@ -81,6 +81,7 @@ class IndexService {
 
 			$provider->initUser($userId);
 			$platform->initProvider($provider);
+
 			for ($i = 0; $i < 1000; $i++) {
 
 				try {
@@ -91,6 +92,23 @@ class IndexService {
 			}
 
 			$provider->endUser();
+		}
+	}
+
+
+
+	public function resetIndex($providerId = null)
+	{
+		$platform = $this->platformService->getPlatform();
+
+		if ($providerId === null) {
+			$providers = $this->providerService->getProviders();
+		} else {
+			$providers = [$this->providerService->getProvider($providerId)];
+		}
+
+		foreach ($providers AS $provider) {
+			$platform->resetProvider($provider);
 		}
 	}
 
