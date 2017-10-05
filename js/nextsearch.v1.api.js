@@ -43,6 +43,7 @@ var api = {
 				search: search
 			}
 		}).done(function (res) {
+			console.log('. ' + JSON.stringify(res));
 			nav.displayResult(res);
 			api.onCallback(callback, res);
 		}).fail(function () {

@@ -7,6 +7,7 @@ use OCP\Util;
 NextSearch::addJavascriptAPI();
 Util::addScript(NextSearch::appName(), 'example');
 
+
 ?>
 
 Full Next Search
@@ -21,12 +22,15 @@ Full Next Search
 
 
 <script id="template_entry" type="text/template">
-	<div id="title">title %%id%%</div>
-		<div id="line1">
+	<div class="result_entry_default">
+		<div class="result_entry_left">
+			<div id="title">title %%id%%</div>
+			<div id="line1"></div>
+			<div id="line2"></div>
 		</div>
-		<div id="line2">
+		<div class="result_entry_right">
+			<div id="score">score</div>
 		</div>
 	</div>
-	<div id="score">score</div>
 
 </script>

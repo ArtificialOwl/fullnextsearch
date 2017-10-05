@@ -45,7 +45,7 @@ Example.prototype = {
 	init: function () {
 		var self = this;
 
-		nextSearch.setEntryTemplateId('template_entry');
+		nextSearch.setEntryTemplateId('template_entry', self);
 		nextSearch.setResultContainerId('search_result');
 
 		elements.search_input = $('#search_input');
@@ -59,8 +59,20 @@ Example.prototype = {
 
 	searchResult: function (result) {
 		elements.search_json.text(JSON.stringify(result));
-	}
+	},
 
+
+	onEntryGenerated: function (entry) {
+		this.deleteEmptyDiv(entry, '#line1');
+		this.deleteEmptyDiv(entry, '#line2');
+	},
+
+	deleteEmptyDiv: function (entry, divId) {
+		var div = entry.find(divId);
+		if (div.text() === '') {
+			div.remove();
+		}
+	}
 };
 
 

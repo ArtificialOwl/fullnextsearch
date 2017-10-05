@@ -265,6 +265,10 @@ var nav = {
 			divResult.attr('data-result', JSON.stringify(entry));
 			divResult.append(divResultContent);
 
+			if (settings.parentHasMethod(settings.parent.onEntryGenerated)) {
+				settings.parent.onEntryGenerated(divResult);
+			}
+
 			return divResult;
 		},
 

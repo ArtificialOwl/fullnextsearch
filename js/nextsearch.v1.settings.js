@@ -29,18 +29,26 @@
 
 var settings = {
 
+	parent: null,
 	delay_provider: 200,
 	delay_result: 100,
 	resultContainer: null,
 	entryTemplate: null,
 	entryTemplateDefault: $('#default_template_entry'),
 
-	setEntryTemplateId: function (templateId) {
+	setEntryTemplateId: function (templateId, parent) {
 		settings.entryTemplate = $('#' + templateId);
+		settings.parent = parent;
 	},
 
 	setResultContainerId: function (containerId) {
 		settings.resultContainer = $('#' + containerId);
-	}
+	},
 
+	parentHasMethod: function (method) {
+		if (settings.parent === null) {
+			return false;
+		}
+		return (typeof method === "function");
+	}
 };
