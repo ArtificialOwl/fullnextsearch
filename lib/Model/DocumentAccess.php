@@ -45,6 +45,8 @@ class DocumentAccess {
 	/** @var array */
 	private $circles = [];
 
+	/** @var array */
+	private $links = [];
 
 	/**
 	 * DocumentAccess constructor.
@@ -121,6 +123,21 @@ class DocumentAccess {
 	 */
 	public function getCircles() {
 		return $this->circles;
+	}
+
+
+	/**
+	 * @param array $links
+	 */
+	public function setLinks($links) {
+		$this->links = $links;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getLinks() {
+		return $this->links;
 	}
 
 }

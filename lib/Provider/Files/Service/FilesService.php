@@ -28,7 +28,8 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
-use OC\Files\View;
+use OC\Share\Constants;
+use OC\Share\Share;
 use OCA\FullNextSearch\Model\DocumentAccess;
 use OCA\FullNextSearch\Model\SearchDocument;
 use OCA\FullNextSearch\Provider\Files\Model\FilesDocument;
@@ -53,6 +54,8 @@ class FilesService {
 	 *
 	 * @param IRootFolder $rootFolder
 	 * @param MiscService $miscService
+	 *
+	 * @internal param IProviderFactory $factory
 	 */
 	function __construct(IRootFolder $rootFolder, MiscService $miscService) {
 		$this->rootFolder = $rootFolder;
@@ -150,7 +153,7 @@ class FilesService {
 		if (sizeof($viewerFiles) === 0) {
 			return;
 		}
-
+		// we only take the first file
 		$file = array_shift($viewerFiles);
 
 		// TODO: better way to do this : we remove the '/userId/files/'
@@ -226,11 +229,90 @@ class FilesService {
 				 ->getUID()
 		);
 
-		$access->setUsers(['cul']);
-		$access->setGroups(['group1']);
-		$access->setCircles(['circle', '12345']);
+		list($users, $groups, $circles, $links) = $this->getSharesFromFileId($file->getId());
+		$access->setUsers($users);
+		$access->setGroups($groups);
+		$access->setCircles($circles);
+		$access->setLinks($links);
 
 		return $access;
+	}
+
+
+	private function getSharesFromFileId($fileId) {
+
+		$users = $groups = $circles = $links = [];
+		$shares = Share::getAllSharesForFileId($fileId);
+
+		foreach ($shares as $share) {
+			$this->parseUsersShares($share, $users);
+			$this->parseUsersGroups($share, $groups);
+			$this->parseUsersCircles($share, $circles);
+			$this->parseUsersLinks($share, $links);
+		}
+
+
+		return [$users, $groups, $circles, $links];
+	}
+
+
+	/**
+	 * @param array $share
+	 * @param array $users
+	 */
+	private function parseUsersShares($share, &$users) {
+		if ((int)$share['share_type'] !== Constants::SHARE_TYPE_USER) {
+			return;
+		}
+
+		if (!in_array($share['share_with'], $users)) {
+			$users[] = $share['share_with'];
+		}
+	}
+
+
+	/**
+	 * @param array $share
+	 * @param array $groups
+	 */
+	private function parseUsersGroups($share, &$groups) {
+		if ((int)$share['share_type'] !== Constants::SHARE_TYPE_GROUP) {
+			return;
+		}
+
+		if (!in_array($share['share_with'], $groups)) {
+			$groups[] = $share['share_with'];
+		}
+	}
+
+
+	/**
+	 * @param array $share
+	 * @param array $circles
+	 */
+	private function parseUsersCircles($share, &$circles) {
+		if ((int)$share['share_type'] !== Constants::SHARE_TYPE_CIRCLE) {
+			return;
+		}
+
+		if (!in_array($share['share_with'], $circles)) {
+			$circles[] = $share['share_with'];
+		}
+	}
+
+
+	/**
+	 * @param array $share
+	 * @param array $links
+	 */
+	private function parseUsersLinks($share, &$links) {
+		if ((int)$share['share_type'] !== Constants::SHARE_TYPE_LINK) {
+			return;
+		}
+
+		if (!in_array($share['share_with'], $links)) {
+			$links[] = $share['share_with'];
+		}
 	}
 
 

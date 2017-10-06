@@ -163,7 +163,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			'circles' => $access->getCircles()
 		];
 
-		echo json_encode($index);
+		//echo json_encode($index);
 		$result = $this->client->index($index);
 		echo 'Indexing: ' . json_encode($result) . "\n";
 	}
