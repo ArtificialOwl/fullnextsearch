@@ -216,18 +216,15 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			'index' => $provider->getId(),
 			'type'  => 'notype'
 		];
-		$params['body']['query']['bool']['must']['bool']['should'] =
-			[
-				['match' => ['title' => $string]],
-				['match' => ['content' => $string]]
-			];
 
-		$params['body']['query']['bool']['filter']['bool']['should'] =
-			$this->generateAccessSearchQuery($access);
+		$bool['must']['bool']['should'] =
+			$this->generateSearchQueryContent($string);
+		$bool['filter']['bool']['should'] =
+			$this->generateSearchQueryAccess($access);
+		$params['body']['query']['bool'] = $bool;
 
 		$result = $this->client->search($params);
 		$searchResult = $this->generateSearchResultFromResult($result);
-		$searchResult->setProvider($provider);
 
 		foreach ($result['hits']['hits'] as $entry) {
 			$searchResult->addDocument($this->parseSearchEntry($entry, $access->getViewer()));
@@ -237,7 +234,24 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	}
 
 
-	private function generateAccessSearchQuery(DocumentAccess $access) {
+	/**
+	 * @param string $string
+	 *
+	 * @return array
+	 */
+	private function generateSearchQueryContent($string) {
+		return [
+			['match' => ['title' => $string]],
+			['match' => ['content' => $string]]
+		];
+	}
+
+	/**
+	 * @param DocumentAccess $access
+	 *
+	 * @return array
+	 */
+	private function generateSearchQueryAccess(DocumentAccess $access) {
 
 		$query = [];
 		$query[] = ['match' => ['owner' => $access->getViewer()]];
