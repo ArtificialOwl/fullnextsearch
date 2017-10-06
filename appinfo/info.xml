@@ -10,7 +10,7 @@
 
 ]]>
 	</description>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<licence>agpl</licence>
 	<author>Maxence Lange</author>
 	<namespace>FullNextSearch</namespace>
@@ -39,10 +39,5 @@
 		<personal>OCA\FullNextSearch\Settings\Personal</personal>
 		<personal-section>OCA\FullNextSearch\Settings\PersonalSection</personal-section>
 	</settings>
-
-	<fullnextsearch>
-		<provider>OCA\FullNextSearch\Provider\FilesProvider</provider>
-		<platform>OCA\FullNextSearch\Platform\ElasticSearchPlatform</platform>
-	</fullnextsearch>
 
 </info>

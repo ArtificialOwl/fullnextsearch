@@ -12,10 +12,14 @@ PRE-ALPHA - DO NOT INSTALL.
 
 >      make composer
 
-### configuration
+### also:
 
-Set ElasticSearch as the platform
->     ./occ config:app:set --value 'OCA\FullNextSearch\Platform\ElasticSearchPlatform' fullnextsearch search_platform
+You will need :
+
+- https://github.com/daita/fullnextsearch_elasticsearch
+- https://github.com/daita/files_fullnextsearch
+
+### configuration
 
 Add the app in the top bar (optional)
 
