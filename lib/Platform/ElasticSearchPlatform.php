@@ -150,16 +150,22 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	 */
 	public function indexDocument(INextSearchProvider $provider, SearchDocument $document) {
 
-		$article = array();
-		$article['index'] = $provider->getId();
-		$article['id'] = $document->getId();
-		$article['type'] = 'notype';
-		$article['body'] = [
+		$access = $document->getAccess();
+		$index = array();
+		$index['index'] = $provider->getId();
+		$index['id'] = $document->getId();
+		$index['type'] = 'notype';
+		$index['body'] = [
 			'title'   => $document->getTitle(),
-			'content' => $document->getContent()
+			'content' => $document->getContent(),
+			'owner'   => $access->getOwner(),
+			'users'   => $access->getUsers(),
+			'groups'  => $access->getGroups(),
+			'circles' => $access->getCircles()
 		];
 
-		$result = $this->client->index($article);
+		echo json_encode($index);
+		$result = $this->client->index($index);
 		echo 'Indexing: ' . json_encode($result) . "\n";
 	}
 
@@ -210,11 +216,14 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			'index' => $provider->getId(),
 			'type'  => 'notype'
 		];
-		$params['body']['query']['bool']['should'] =
+		$params['body']['query']['bool']['must']['bool']['should'] =
 			[
 				['match' => ['title' => $string]],
 				['match' => ['content' => $string]]
 			];
+
+		$params['body']['query']['bool']['filter']['bool']['should'] =
+			$this->generateAccessSearchQuery($access);
 
 		$result = $this->client->search($params);
 		$searchResult = $this->generateSearchResultFromResult($result);
@@ -225,6 +234,24 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		}
 
 		return $searchResult;
+	}
+
+
+	private function generateAccessSearchQuery(DocumentAccess $access) {
+
+		$query = [];
+		$query[] = ['match' => ['owner' => $access->getViewer()]];
+		$query[] = ['match' => ['users' => $access->getViewer()]];
+
+		foreach ($access->getGroups() as $group) {
+			$query[] = ['match' => ['groups' => $group]];
+		}
+
+		foreach ($access->getCircles() as $circle) {
+			['match' => ['circles' => $circle]];
+		}
+
+		return $query;
 	}
 
 
@@ -304,19 +331,43 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 					'properties' => [
 						'title'    => [
 							'type'        => 'text',
-							'analyzer'    => 'files',
+							'analyzer'    => $provider->getId(),
 							'term_vector' => 'yes',
 							'copy_to'     => 'combined'
 						],
 						'content'  => [
 							'type'        => 'text',
-							'analyzer'    => 'files',
+							'analyzer'    => $provider->getId(),
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'owner'    => [
+							'type'        => 'text',
+							'analyzer'    => $provider->getId(),
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'users'    => [
+							'type'        => 'text',
+							'analyzer'    => $provider->getId(),
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'groups'   => [
+							'type'        => 'text',
+							'analyzer'    => $provider->getId(),
+							'term_vector' => 'yes',
+							'copy_to'     => 'combined'
+						],
+						'circles'  => [
+							'type'        => 'text',
+							'analyzer'    => $provider->getId(),
 							'term_vector' => 'yes',
 							'copy_to'     => 'combined'
 						],
 						'combined' => [
 							'type'        => 'text',
-							'analyzer'    => 'files',
+							'analyzer'    => $provider->getId(),
 							'term_vector' => 'yes'
 						],
 						'topics'   => [

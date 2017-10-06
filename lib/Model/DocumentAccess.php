@@ -37,6 +37,9 @@ class DocumentAccess {
 	private $viewerId;
 
 	/** @var array */
+	private $users;
+
+	/** @var array */
 	private $groups;
 
 	/** @var array */
@@ -50,6 +53,14 @@ class DocumentAccess {
 	 */
 	function __construct($ownerId = '') {
 		$this->ownerId = $ownerId;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getOwner() {
+		return $this->ownerId;
 	}
 
 
@@ -69,6 +80,21 @@ class DocumentAccess {
 
 
 	/**
+	 * @param array $users
+	 */
+	public function setUsers($users) {
+		$this->users = $users;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getUsers() {
+		return $this->users;
+	}
+
+
+	/**
 	 * @param array $groups
 	 */
 	public function setGroups($groups) {
@@ -84,10 +110,10 @@ class DocumentAccess {
 
 
 	/**
-	 * @param array $groups
+	 * @param array $circles
 	 */
-	public function setCircles($groups) {
-		$this->groups = $groups;
+	public function setCircles($circles) {
+		$this->circles = $circles;
 	}
 
 	/**

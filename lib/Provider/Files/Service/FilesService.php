@@ -142,7 +142,7 @@ class FilesService {
 	public function getViewerPathFromDocument(SearchDocument $document) {
 
 		$viewerId = $document->getAccess()
-						   ->getViewer();
+							 ->getViewer();
 
 		$viewerFiles = $this->rootFolder->getUserFolder($viewerId)
 										->getById($document->getId());
@@ -221,12 +221,14 @@ class FilesService {
 	 * @return DocumentAccess
 	 */
 	private function getDocumentAccessFromFile(File $file) {
+		$access = new DocumentAccess(
+			$file->getOwner()
+				 ->getUID()
+		);
 
-		$access = new DocumentAccess($file->getOwner());
-
-
-		$access->setGroups(['test']);
-		$access->setCircles(['sadsdasda', '324234fsd']);
+		$access->setUsers(['cul']);
+		$access->setGroups(['group1']);
+		$access->setCircles(['circle', '12345']);
 
 		return $access;
 	}

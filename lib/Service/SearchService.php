@@ -111,8 +111,8 @@ class SearchService {
 		$rights = new DocumentAccess();
 
 		$rights->setViewer($userId);
-		$rights->setCircles(['qwe234drf']);
-		$rights->setGroups(['test']);
+		$rights->setCircles(['qwerty', '12345']);
+		$rights->setGroups(['group1', 'group2']);
 
 		return $rights;
 	}
