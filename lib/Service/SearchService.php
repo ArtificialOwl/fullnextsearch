@@ -108,8 +108,9 @@ class SearchService {
 	 * @return DocumentAccess
 	 */
 	private function getDocumentAccessFromUser($userId) {
-		$rights = new DocumentAccess($userId);
+		$rights = new DocumentAccess();
 
+		$rights->setViewer($userId);
 		$rights->setCircles(['qwe234drf']);
 		$rights->setGroups(['test']);
 

@@ -109,7 +109,7 @@ class FilesProvider implements INextSearchProvider {
 	 */
 	public function parseSearchResult(SearchResult $searchResult) {
 		foreach ($searchResult->getDocuments() as $document) {
-		//	$document->setTitle('sdadsasad ' . $document->getId());
+			$this->filesService->getViewerPathFromDocument($document);
 		}
 	}
 

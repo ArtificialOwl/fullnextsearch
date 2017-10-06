@@ -28,7 +28,9 @@
 namespace OCA\FullNextSearch\Provider\Files\Service;
 
 
+use OC\Files\View;
 use OCA\FullNextSearch\Model\DocumentAccess;
+use OCA\FullNextSearch\Model\SearchDocument;
 use OCA\FullNextSearch\Provider\Files\Model\FilesDocument;
 use OCA\FullNextSearch\Service\MiscService;
 use OCP\Files\File;
@@ -84,9 +86,9 @@ class FilesService {
 		$files = $node->getDirectoryListing();
 
 		$result = [];
-		foreach ($files as $file) {
 
-			$result[] = $this->generateFilesIndexFromFile($userId, $file);
+		foreach ($files as $file) {
+			$result[] = $this->generateFilesIndexFromFile($file);
 			if ($file->getType() === FileInfo::TYPE_FOLDER) {
 				/** @var $file Folder */
 				$result = array_merge($result, $this->getFilesFromDirectory($userId, $file));
@@ -98,21 +100,61 @@ class FilesService {
 
 
 	/**
-	 * @param string $userId
 	 * @param Node $file
 	 *
 	 * @return FilesDocument
 	 */
-	private function generateFilesIndexFromFile($userId, Node $file) {
-		$index = new FilesDocument($file->getId());
-		$index->setType($file->getType())
-			  ->setOwner($userId)
-			  ->setMimetype($file->getMimetype())
-			// TODO: better way to do this : we remove the 'files/'
-			  ->setPath(substr($file->getInternalPath(), 6))
-			  ->setFilename($file->getName());
+	private function generateFilesIndexFromFile(Node $file) {
+		$document = new FilesDocument($file->getId());
 
-		return $index;
+		$document->setType($file->getType())
+				 ->setOwner(
+					 $file->getOwner()
+						  ->getUID()
+				 )
+				 ->setMimetype($file->getMimetype());
+
+		$this->completeFileDocument($document);
+
+		return $document;
+	}
+
+
+	private function completeFileDocument(FilesDocument $document) {
+
+		$ownerFiles = $this->rootFolder->getUserFolder($document->getOwner())
+									   ->getById($document->getId());
+
+		if (sizeof($ownerFiles) === 0) {
+			return;
+		}
+		$file = array_shift($ownerFiles);
+
+		// TODO: better way to do this : we remove the 'files/'
+		$document->setPath(substr($file->getInternalPath(), 6))
+				 ->setFilename($file->getName());
+	}
+
+
+	/**
+	 * @param SearchDocument $document
+	 */
+	public function getViewerPathFromDocument(SearchDocument $document) {
+
+		$viewerId = $document->getAccess()
+						   ->getViewer();
+
+		$viewerFiles = $this->rootFolder->getUserFolder($viewerId)
+										->getById($document->getId());
+
+		if (sizeof($viewerFiles) === 0) {
+			return;
+		}
+
+		$file = array_shift($viewerFiles);
+
+		// TODO: better way to do this : we remove the '/userId/files/'
+		$document->setTitle(MiscService::noEndSlash(substr($file->getPath(), 7 + strlen($viewerId))));
 	}
 
 
@@ -145,12 +187,12 @@ class FilesService {
 	private function extractContentFromFile(FilesDocument $document) {
 		$userFolder = $this->rootFolder->getUserFolder($document->getOwner());
 		$file = $userFolder->get($document->getPath());
-
 		if ($file->getType() === FileInfo::TYPE_FILE) {
+
 			/** @var File $file */
 			$access = $this->getDocumentAccessFromFile($file);
 			$document->setAccess($access);
-			$document->setTitle($file->getInternalPath());
+			$document->setTitle($document->getPath());
 
 			$this->extractContentFromFileText($document, $file);
 			//$this->extractContentFromFilePDF($document, $file);
@@ -181,6 +223,7 @@ class FilesService {
 	private function getDocumentAccessFromFile(File $file) {
 
 		$access = new DocumentAccess($file->getOwner());
+
 
 		$access->setGroups(['test']);
 		$access->setCircles(['sadsdasda', '324234fsd']);

@@ -31,7 +31,10 @@ namespace OCA\FullNextSearch\Model;
 class DocumentAccess {
 
 	/** @var string */
-	private $userId;
+	private $ownerId;
+
+	/** @var string */
+	private $viewerId;
 
 	/** @var array */
 	private $groups;
@@ -43,10 +46,25 @@ class DocumentAccess {
 	/**
 	 * DocumentAccess constructor.
 	 *
-	 * @param string $userId
+	 * @param string $ownerId
 	 */
-	function __construct($userId) {
-		$this->userId = $userId;
+	function __construct($ownerId = '') {
+		$this->ownerId = $ownerId;
+	}
+
+
+	/**
+	 * @param string $viewerId
+	 */
+	public function setViewer($viewerId) {
+		$this->viewerId = $viewerId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getViewer() {
+		return $this->viewerId;
 	}
 
 

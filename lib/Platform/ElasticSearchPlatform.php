@@ -221,7 +221,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		$searchResult->setProvider($provider);
 
 		foreach ($result['hits']['hits'] as $entry) {
-			$searchResult->addDocument($this->parseSearchEntry($entry));
+			$searchResult->addDocument($this->parseSearchEntry($entry, $access->getViewer()));
 		}
 
 		return $searchResult;
@@ -242,13 +242,17 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 
 
 	/**
-	 * @param $entry
+	 * @param array $entry
+	 * @param string $viewerId
 	 *
 	 * @return SearchDocument
 	 */
-	private function parseSearchEntry($entry) {
-		$document = new SearchDocument($entry['_id']);
+	private function parseSearchEntry($entry, $viewerId) {
+		$access = new DocumentAccess();
+		$access->setViewer($viewerId);
 
+		$document = new SearchDocument($entry['_id']);
+		$document->setAccess($access);
 		$document->setContent($entry['_source']['content']);
 		$document->setScore($entry['_score']);
 		$document->setTitle($entry['_source']['title']);
