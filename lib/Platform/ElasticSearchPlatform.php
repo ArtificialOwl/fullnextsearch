@@ -101,6 +101,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 			$this->client->indices()
 						 ->delete($map);
 		} catch (Missing404Exception $e) {
+			/* 404Exception will means that the index for that provider does not exist */
 		}
 	}
 
@@ -132,9 +133,7 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		foreach ($documents as $document) {
 
 			if ($command !== null) {
-				if ($command->hasBeenInterrupted()) {
-					throw new InterruptException();
-				}
+				$command->hasBeenInterrupted();
 
 				$this->interactWithCommandDuringIndex($command);
 			}
@@ -212,19 +211,11 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 	 */
 	public function search(INextSearchProvider $provider, DocumentAccess $access, $string) {
 
-		$params = [
-			'index' => $provider->getId(),
-			'type'  => 'notype'
-		];
-
-		$bool['must']['bool']['should'] =
-			$this->generateSearchQueryContent($string);
-		$bool['filter']['bool']['should'] =
-			$this->generateSearchQueryAccess($access);
-		$params['body']['query']['bool'] = $bool;
+		$params = $this->generateSearchQuery($provider, $access, $string);
 
 		$result = $this->client->search($params);
 		$searchResult = $this->generateSearchResultFromResult($result);
+		$searchResult->setProvider($provider);
 
 		foreach ($result['hits']['hits'] as $entry) {
 			$searchResult->addDocument($this->parseSearchEntry($entry, $access->getViewer()));
@@ -233,6 +224,32 @@ class ElasticSearchPlatform implements INextSearchPlatform {
 		return $searchResult;
 	}
 
+
+	/**
+	 * @param INextSearchProvider $provider
+	 * @param DocumentAccess $access
+	 * @param string $str
+	 *
+	 * @return array
+	 */
+	private function generateSearchQuery(
+		INextSearchProvider $provider, DocumentAccess $access, $str
+	) {
+
+		$params = [
+			'index' => $provider->getId(),
+			'type'  => 'notype'
+		];
+
+		$bool = [];
+		$bool['must']['bool']['should'] =
+			$this->generateSearchQueryContent($str);
+		$bool['filter']['bool']['should'] =
+			$this->generateSearchQueryAccess($access);
+		$params['body']['query']['bool'] = $bool;
+
+		return $params;
+	}
 
 	/**
 	 * @param string $string

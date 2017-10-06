@@ -79,6 +79,8 @@ class Index extends ExtendedBase {
 					continue;
 				}
 
+				$this->hasBeenInterrupted();
+
 				$output->writeln(' USER: ' . $user->getUID());
 				$this->indexService->indexContentFromUser($user->getUID(), $this);
 			}

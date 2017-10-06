@@ -29,6 +29,7 @@ namespace OCA\FullNextSearch\Service;
 
 use \Exception;
 use OC\Core\Command\Base;
+use OCA\FullNextSearch\Exceptions\InterruptException;
 use OCA\FullNextSearch\INextSearchPlatform;
 use OCA\FullNextSearch\INextSearchProvider;
 use OCA\FullNextSearch\Model\ExtendedBase;
@@ -86,6 +87,8 @@ class IndexService {
 
 				try {
 					$this->indexChunk($platform, $provider, $command);
+				} catch (InterruptException $e) {
+					throw $e;
 				} catch (Exception $e) {
 					continue(2);
 				}
@@ -96,9 +99,7 @@ class IndexService {
 	}
 
 
-
-	public function resetIndex($providerId = null)
-	{
+	public function resetIndex($providerId = null) {
 		$platform = $this->platformService->getPlatform();
 
 		if ($providerId === null) {
@@ -119,7 +120,7 @@ class IndexService {
 	 * @param ExtendedBase|null $command
 	 */
 	private function indexChunk(
-		INextSearchPlatform $platform, INextSearchProvider $provider, ExtendedBase $command
+		INextSearchPlatform $platform, INextSearchProvider $provider, $command
 	) {
 		$items = $provider->generateDocuments(
 			(int)$this->configService->getAppValue(ConfigService::CHUNK_INDEX)
