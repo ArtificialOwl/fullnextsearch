@@ -27,14 +27,28 @@
 
 namespace OCA\FullNextSearch\Service;
 
+use OC\App\AppManager;
+use OCA\Circles\Api\v1\Circles;
 use OCA\FullNextSearch\Model\DocumentAccess;
 use OCA\FullNextSearch\Model\SearchResult;
+use OCP\IGroupManager;
+use OCP\IUser;
+use OCP\IUserManager;
 
 
 class SearchService {
 
 	/** @var string */
 	private $userId;
+
+	/** @var AppManager */
+	private $appManager;
+
+	/** @var IUserManager */
+	private $userManager;
+
+	/** @var IGroupManager */
+	private $groupManager;
 
 	/** @var ConfigService */
 	private $configService;
@@ -53,16 +67,23 @@ class SearchService {
 	 * IndexService constructor.
 	 *
 	 * @param string $userId
+	 * @param AppManager $appManager
+	 * @param IUserManager $userManager
+	 * @param IGroupManager $groupManager
 	 * @param ConfigService $configService
 	 * @param ProviderService $providerService
 	 * @param PlatformService $platformService
 	 * @param MiscService $miscService
 	 */
 	function __construct(
-		$userId, ConfigService $configService, ProviderService $providerService,
-		PlatformService $platformService, MiscService $miscService
+		$userId, AppManager $appManager, IUserManager $userManager, IGroupManager $groupManager,
+		ConfigService $configService, ProviderService $providerService, PlatformService $platformService,
+		MiscService $miscService
 	) {
 		$this->userId = $userId;
+		$this->appManager = $appManager;
+		$this->userManager = $userManager;
+		$this->groupManager = $groupManager;
 		$this->configService = $configService;
 		$this->providerService = $providerService;
 		$this->platformService = $platformService;
@@ -88,7 +109,8 @@ class SearchService {
 		$providers = $this->providerService->getFilteredProviders($providerId);
 		$platform = $this->platformService->getPlatform();
 
-		$access = $this->getDocumentAccessFromUser($userId);
+		$user = $this->userManager->get($userId);
+		$access = $this->getDocumentAccessFromUser($user);
 		$result = [];
 		foreach ($providers AS $provider) {
 			$searchResult = $platform->search($provider, $access, $search);
@@ -104,16 +126,23 @@ class SearchService {
 
 
 	/**
-	 * @param $userId
+	 * @param IUser $user
 	 *
 	 * @return DocumentAccess
 	 */
-	private function getDocumentAccessFromUser($userId) {
+	private function getDocumentAccessFromUser(IUser $user) {
 		$rights = new DocumentAccess();
 
-		$rights->setViewer($userId);
-		$rights->setCircles(['qwerty', '12345']);
-		$rights->setGroups(['group1', 'group2']);
+		$rights->setViewer($user->getUID());
+		$rights->setGroups($this->groupManager->getUserGroupIds($user));
+
+		if ($this->appManager->isEnabledForUser('circles', $user)) {
+			try {
+				$rights->setCircles(Circles::joinedCircleIds($user->getUID()));
+			} catch (\Exception $e) {
+				$this->miscService->log('Circles is set as enabled but: ' . $e->getMessage());
+			}
+		}
 
 		return $rights;
 	}

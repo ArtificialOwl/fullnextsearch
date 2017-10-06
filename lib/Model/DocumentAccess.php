@@ -37,13 +37,13 @@ class DocumentAccess {
 	private $viewerId;
 
 	/** @var array */
-	private $users;
+	private $users = [];
 
 	/** @var array */
-	private $groups;
+	private $groups = [];
 
 	/** @var array */
-	private $circles;
+	private $circles = [];
 
 
 	/**
